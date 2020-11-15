@@ -1,22 +1,30 @@
+import { useEffect } from "react";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
+  useEffect(() => {
+    const script = document.createElement("script");
+
+    script.src = JSON.stringify({
+      "@context": "https://schema.org/",
+      "@type": "Recipe",
+      name:
+        "Why do Android phones mysteriously exchange 260MB a month with Google via cellular data?",
+      description:
+        "Ad giant sued after mobile allowances eaten by hidden transfers.",
+      image: "https://hacker-news-podcast.vercel.app/logo.png",
+    });
+
+    document.head.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   return (
     <>
-      <Head>
-        <script type="application/ld+json">
-          {{
-            "@context": "https://schema.org/",
-            "@type": "Recipe",
-            name:
-              "Why do Android phones mysteriously exchange 260MB a month with Google via cellular data?",
-            description:
-              "Ad giant sued after mobile allowances eaten by hidden transfers.",
-            image: "https://hacker-news-podcast.vercel.app/logo.png",
-          }}
-        </script>
-      </Head>
       <div className={styles.container}>
         <Head>
           <title>Create Next App</title>
