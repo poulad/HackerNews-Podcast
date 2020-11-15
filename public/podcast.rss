@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+    xmlns:googleplay="http://www.google.com/schemas/play-podcasts/1.0"
+    xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+  <channel>
+    <title>Hacker News Podcast</title>
+    <googleplay:owner>poulad.pld@gmail.com</googleplay:owner>
+    <googleplay:author>Poulad Ashrafpour</googleplay:author>
+    <description>Hacker News articles of the day transformed to podcasts via speech synthesis.</description>
+    <googleplay:image href="https://hacker-news-podcast.vercel.app/logo.png"/>
+    <language>en-us</language>
+    <link>https://hacker-news-podcast.vercel.app/</link>
+    <item>
+      <title>Why do Android phones mysteriously exchange 260MB a month with Google via cellular data?</title>
+      <description>Ad giant sued after mobile allowances eaten by hidden transfers. Read full article at https://www.theregister.com/2020/11/14/google_android_data_allowance/.</description>
+      <pubDate>Sat, 14 Nov 2020 00:09:00 GMT</pubDate>
+      <enclosure url="https://poulad.github.io/HackerNews-Podcast/speech.mp3" type="audio/mpeg" length="1787292"/>
+      <itunes:duration>03:57</itunes:duration>
+      <guid isPermaLink="false">hnp00</guid>
+    </item>
+  </channel>
+</rss>
