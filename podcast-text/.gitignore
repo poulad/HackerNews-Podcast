@@ -222,6 +222,5 @@ tests/cases/user/prettier/prettier
 
 
 !.vscode/launch.json
+texts/
 .env
-/stories/
-/episodes/
