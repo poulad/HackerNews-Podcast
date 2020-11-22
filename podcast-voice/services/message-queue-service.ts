@@ -21,7 +21,7 @@ export class MessageQueueService<TMessage> {
     return this._queue;
   }
 
-  ensureConnection = async () => {
+  ensureConnected = async () => {
     if (!this._connection) {
       this._connection = await connect(this._connStr);
       this._channel = await this._connection.createConfirmChannel();
@@ -35,7 +35,7 @@ export class MessageQueueService<TMessage> {
   };
 
   enqueue = (message: TMessage): Promise<void> =>
-    this.ensureConnection().then(
+    this.ensureConnected().then(
       () =>
         new Promise((resolve, reject) => {
           this._channel.publish(
@@ -53,7 +53,7 @@ export class MessageQueueService<TMessage> {
   peek = () => this.getMessage(false);
 
   private getMessage = async (ackMessage = true) => {
-    await this.ensureConnection();
+    await this.ensureConnected();
     const result = await this._channel.get(this.queue, { noAck: ackMessage });
     if (result === false) {
       return null;

@@ -1,13 +1,14 @@
-import Axios from "axios";
+import Axios, { AxiosError } from "axios";
 import { mkdirSync, writeFileSync } from "fs";
+import { join, dirname } from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { config as dotenvConfig } from "dotenv";
 import { MessageQueueService } from "./services/message-queue-service";
-import { HackerNewsStory } from "./models/hacker-news-story";
-import { CleanText } from "./models/clean-text";
-
-type StoryText = { story: HackerNewsStory; text: CleanText };
+import { Podcast } from "./models/podcast";
+import { ConnectionManager } from "./services/rabbitmq/connection-manager";
+import { QueueConsumer } from "./services/rabbitmq/queue-consumer";
+import { JsonSerializer } from "./services/rabbitmq/json-serializer";
 
 // const episode = {
 //   id: "wiki-wikipedia",
@@ -32,8 +33,8 @@ type StoryText = { story: HackerNewsStory; text: CleanText };
 //   ],
 // };
 
-function getStoryText(mqService: MessageQueueService<StoryText>) {
-  return mqService.peek();
+function getStoryText(queue: MessageQueueService<Podcast>) {
+  return queue.peek();
 }
 
 function splitTextIntoChunks(text: string): string[] {
@@ -44,7 +45,7 @@ function splitTextIntoChunks(text: string): string[] {
     .map((chunk) => chunk + ".");
 }
 
-async function getVoiceChunk(sentence, filename) {
+async function synthesizeSpeechForSentence(sentence, filename) {
   try {
     const resp = await Axios.get("http://localhost:5002/api/tts", {
       params: {
@@ -58,14 +59,14 @@ async function getVoiceChunk(sentence, filename) {
       console.error(`Failed. ${resp.status}`);
     }
   } catch (e) {
-    console.error(`Failed.`, e);
+    console.error(`Failed.`, (e as AxiosError).response.data.toString(), e);
   }
 }
 
 /**
  * @param {string[]} chunks
  */
-async function combineVoiceChunks(chunks, output) {
+async function combineAudioChunks(chunks, output) {
   const cunksWithGaps = chunks
     .map((c) => [c, `./sln.wav`])
     .reduce((prev, curr) => [...prev, ...curr], []);
@@ -77,46 +78,108 @@ async function combineVoiceChunks(chunks, output) {
   const { stdout, stderr } = await execFn(commandText);
 }
 
+let rabbitmqConnection: ConnectionManager;
+
+function shutdown(signal: string) {
+  // See https://nodejs.org/api/process.html?#process_signal_events
+  console.warn(`Recieved signal "${signal}". Shutting down...`);
+  let isShutdownSuccessful = true;
+  if (rabbitmqConnection) {
+    console.warn(`Closing RabbitMQ connection...`);
+    // TODO close rxjs streams. wait for them to be handled.
+    rabbitmqConnection
+      .disconnect()
+      .then(() => {
+        console.info(`RabbitMQ connection is closed.`);
+      })
+      .catch((e) => {
+        console.error(`Failed to close RabbitMQ connection.`, e);
+        isShutdownSuccessful = false;
+      })
+      .finally(() => {
+        process.exit(isShutdownSuccessful ? 0 : 2);
+      });
+  } else {
+    process.exit(isShutdownSuccessful ? 0 : 2);
+  }
+}
+
 async function main() {
+  process.on("SIGTERM", shutdown);
+  process.on("SIGINT", shutdown);
+  process.on("SIGHUP", shutdown);
+
   const dotenvResult = dotenvConfig();
   if (dotenvResult.error) {
     throw dotenvResult.error;
   }
+  //
+  const qpub = new MessageQueueService<Podcast>(process.env.AMQP_URI, "foo");
+  await qpub.peek();
+  //
 
-  const textsQueueService = new MessageQueueService<StoryText>(
-    process.env.AMQP_URL,
+  rabbitmqConnection = new ConnectionManager(process.env.AMQP_URI);
+  const q = new QueueConsumer<Podcast>(
+    "foo",
+    rabbitmqConnection,
+    new JsonSerializer<Podcast>()
+  );
+
+  const subscription = q.stream.subscribe(
+    (e) => {
+      console.log("ENVELOP", e);
+      e.acknowledge();
+    },
+    (e) => {
+      console.warn(`ERRRRRR`, e);
+    },
+    () => {
+      console.log("Stream is closed!");
+    }
+  );
+  await q.consumeQueue();
+
+  return;
+
+  const textsQueue = new MessageQueueService<Podcast>(
+    process.env.AMQP_URI,
     "texts"
   );
-  const voicesQueueService = new MessageQueueService<{}>(
-    process.env.AMQP_URL,
-    "voices"
+  const audioQueue = new MessageQueueService<Podcast>(
+    process.env.AMQP_URI,
+    "audio"
   );
 
-  const storyText = await getStoryText(textsQueueService);
-  const processedText = {
-    ...storyText,
-    sentences: splitTextIntoChunks(storyText.text.text),
+  const podcast = await getStoryText(textsQueue);
+  const sentences = splitTextIntoChunks(podcast.text.text);
+
+  podcast.audio = {
+    file: join(__dirname, `../stories/${podcast.story.id}/audio.wav`),
+    format: "audio/wav",
+    length: 1,
   };
 
-  mkdirSync(`stories/${processedText.story.id}/`, { recursive: true });
-  const audioChunkFiles = [];
-  for (let i = 0; i < processedText.sentences.length; i++) {
-    audioChunkFiles.push(`stories/${processedText.story.id}/${i}.wav`);
-    await getVoiceChunk(
-      processedText.sentences[i],
-      audioChunkFiles[audioChunkFiles.length - 1]
-    );
-  }
-  await combineVoiceChunks(
-    audioChunkFiles,
-    `stories/${processedText.story.id}/voice.wav`
+  const outputDir = dirname(podcast.audio.file);
+  mkdirSync(outputDir, { recursive: true });
+  await Promise.all(
+    sentences.map((sentence, i) =>
+      synthesizeSpeechForSentence(sentence, `${outputDir}/${i}.wav`)
+    )
   );
+
+  await combineAudioChunks(
+    sentences.map((_, i) => `${outputDir}/${i}.wav`),
+    podcast.audio.file
+  );
+
+  delete podcast.text.text;
+  await audioQueue.enqueue(podcast);
 }
 
 (async function () {
   try {
     await main();
-    process.exit(0);
+    // process.exit(0);
   } catch (e) {
     console.error(` --> An error occured!`, e);
     process.exit(1);
