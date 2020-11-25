@@ -3,12 +3,14 @@ import { Subject } from "rxjs";
 import { ConnectionManager } from "./connection-manager";
 import { MessageSerializer } from "./message-serializer";
 import { Message } from "./message";
+import { MessageHandler } from "./message-handler";
 
 export class QueueConsumer<TPayload> {
   private _channel: ConfirmChannel;
   private _queue: string;
   private _conn: ConnectionManager;
   private _serializer: MessageSerializer<TPayload>;
+  private _handler: MessageHandler<TPayload>;
   private _tag: string;
   private _subject: Subject<Message<TPayload>>;
 
@@ -16,13 +18,14 @@ export class QueueConsumer<TPayload> {
     queue: string,
     conn: ConnectionManager,
     serializer: MessageSerializer<TPayload>,
+    handler: MessageHandler<TPayload>,
     tag?: string
   ) {
     // TODO validations
     this._queue = queue;
     this._conn = conn;
     this._serializer = serializer;
-
+    this._handler = handler;
     if (`${tag}`.length > 1) {
       // santizie name
       this._tag = tag;
@@ -96,13 +99,13 @@ export class QueueConsumer<TPayload> {
     } catch (err) {
       // TODO attach more info to err
       // TODO use a error handler e.g. discard or enqueue bad msg to another queue
-      this._subject.error(err);
-      this.stopConsumingQueue(err);
+      // this._subject.error(err);
+      // this.stopConsumingQueue(err);
       // this._channel.ack(consumeMsg);
       return;
     }
 
-    this._subject.next({
+    this._handler.handle({
       payload: payloadObj,
       acknowledge: () => this._channel.ack(consumeMsg),
       isRedelivered: consumeMsg.fields.redelivered, // TODO read other fields

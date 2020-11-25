@@ -1,10 +1,12 @@
-import * as Axios from "axios";
+import Axios, { AxiosResponse } from "axios";
 import { HackerNewsStory } from "../models/hacker-news-story";
 
+export const STORY_LIMIT = 2;
+
 export async function getTopStories() {
-  let response: Axios.AxiosResponse<number[]>;
+  let response: AxiosResponse<number[]>;
   try {
-    response = await Axios.default.get(
+    response = await Axios.get(
       `https://hacker-news.firebaseio.com/v0/topstories.json`
     );
   } catch (e) {
@@ -14,9 +16,9 @@ export async function getTopStories() {
   const stories: HackerNewsStory[] = [];
 
   for (const id of response.data) {
-    let itemResponse: Axios.AxiosResponse<HackerNewsStory>;
+    let itemResponse: AxiosResponse<HackerNewsStory>;
     try {
-      itemResponse = await Axios.default.get(
+      itemResponse = await Axios.get(
         `https://hacker-news.firebaseio.com/v0/item/${id}.json`
       );
     } catch (e) {
@@ -26,7 +28,7 @@ export async function getTopStories() {
       continue;
     }
     stories.push(itemResponse.data);
-    if (stories.length === 5) {
+    if (stories.length === STORY_LIMIT) {
       break;
     }
   }

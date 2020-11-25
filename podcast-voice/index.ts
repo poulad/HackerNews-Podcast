@@ -10,6 +10,7 @@ import { ConnectionManager } from "./services/rabbitmq/connection-manager";
 import { QueueConsumer } from "./services/rabbitmq/queue-consumer";
 import { JsonSerializer } from "./services/rabbitmq/json-serializer";
 import { getTopStories } from "./handlers/story";
+import { StoryMessageHandler } from "./handlers/story-message-handler";
 import { Subject } from "rxjs";
 import { HackerNewsStory } from "./models/hacker-news-story";
 import { QueueProducer } from "./services/rabbitmq/queue-producer";
@@ -83,6 +84,8 @@ async function combineAudioChunks(chunks, output) {
 }
 
 let rabbitmqConnection: ConnectionManager;
+let storiesSubject: Subject<Podcast>;
+let textsSubject: Subject<Podcast>;
 
 function shutdown(signal: string) {
   // See https://nodejs.org/api/process.html?#process_signal_events
@@ -108,20 +111,45 @@ function shutdown(signal: string) {
   }
 }
 
+function initSubjects() {
+  storiesSubject = new Subject<Podcast>();
+  textsSubject = new Subject<Podcast>();
+}
+
 async function initQueues() {
   const ch = await rabbitmqConnection.createChannelInConfirmMode();
   await Promise.all(
     ["stories", "texts", "audios", "podcasts"].map((q) => ch.assertQueue(q))
   );
+  await ch.close();
 }
 
-function startQueueConsumers() {
-  const qStories = new QueueConsumer<Podcast>(
+async function startQueueProducers() {
+  const storiesProducer = new QueueProducer<Podcast>(
     "stories",
     rabbitmqConnection,
-    new JsonSerializer<Podcast>()
+    new JsonSerializer()
   );
-  qStories.startConsumingQueue();
+  await storiesProducer.establishChannel();
+  await storiesProducer.pipeToQueue(storiesSubject.asObservable());
+
+  const textsProducer = new QueueProducer<Podcast>(
+    "texts",
+    rabbitmqConnection,
+    new JsonSerializer()
+  );
+  await textsProducer.establishChannel();
+  await textsProducer.pipeToQueue(textsSubject.asObservable());
+}
+
+async function startQueueConsumers() {
+  const storiesConsumer = new QueueConsumer<Podcast>(
+    "stories",
+    rabbitmqConnection,
+    new JsonSerializer<Podcast>(),
+    new StoryMessageHandler(textsSubject.next)
+  );
+  await storiesConsumer.startConsumingQueue();
 }
 
 async function main() {
@@ -138,20 +166,15 @@ async function main() {
   // const qpub = new MessageQueueService<Podcast>(process.env.AMQP_URI, "foo");
   // await qpub.peek();
   //
+  initSubjects();
   await initQueues();
-  startQueueConsumers();
+  await startQueueProducers();
+  await startQueueConsumers();
 
-  const storiesSubject = new Subject<HackerNewsStory>();
-  const storiesProducer = new QueueProducer<HackerNewsStory>(
-    "stories",
-    rabbitmqConnection,
-    new JsonSerializer()
-  );
-  await storiesProducer.pipeToQueue(storiesSubject.asObservable());
   const stories = await getTopStories();
-  stories.forEach((s) => storiesSubject.next(s));
+  stories.forEach((s) => storiesSubject.next({ story: s }));
 
-  return;
+  /*
   const q = new QueueConsumer<Podcast>(
     "foo",
     rabbitmqConnection,
@@ -206,6 +229,7 @@ async function main() {
 
   delete podcast.text.text;
   await audioQueue.enqueue(podcast);
+  */
 }
 
 (async function () {
