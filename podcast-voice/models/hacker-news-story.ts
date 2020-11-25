@@ -4,6 +4,6 @@ export interface HackerNewsStory {
   score: number;
   time: number;
   title: string;
-  type: string;
+  type: "story" | "job" | "comment" | "poll" | "pollopt";
   url: string;
 }

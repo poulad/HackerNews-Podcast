@@ -7,7 +7,7 @@ export class ConnectionManager {
   private _connection: Connection;
   private _channels: Channel[];
 
-  constructor(private _connectionString: string) {}
+  constructor(private _connectionString: string, private _channelsLimit = 3) {}
 
   /**
    * Establishes a TCP connection to RabbitMQ broker.

@@ -9,6 +9,10 @@ import { Podcast } from "./models/podcast";
 import { ConnectionManager } from "./services/rabbitmq/connection-manager";
 import { QueueConsumer } from "./services/rabbitmq/queue-consumer";
 import { JsonSerializer } from "./services/rabbitmq/json-serializer";
+import { getTopStories } from "./handlers/story";
+import { Subject } from "rxjs";
+import { HackerNewsStory } from "./models/hacker-news-story";
+import { QueueProducer } from "./services/rabbitmq/queue-producer";
 
 // const episode = {
 //   id: "wiki-wikipedia",
@@ -104,40 +108,68 @@ function shutdown(signal: string) {
   }
 }
 
+async function initQueues() {
+  const ch = await rabbitmqConnection.createChannelInConfirmMode();
+  await Promise.all(
+    ["stories", "texts", "audios", "podcasts"].map((q) => ch.assertQueue(q))
+  );
+}
+
+function startQueueConsumers() {
+  const qStories = new QueueConsumer<Podcast>(
+    "stories",
+    rabbitmqConnection,
+    new JsonSerializer<Podcast>()
+  );
+  qStories.startConsumingQueue();
+}
+
 async function main() {
-  process.on("SIGTERM", shutdown);
-  process.on("SIGINT", shutdown);
-  process.on("SIGHUP", shutdown);
+  process.once("SIGTERM", shutdown);
+  process.once("SIGINT", shutdown);
+  process.once("SIGHUP", shutdown);
 
   const dotenvResult = dotenvConfig();
   if (dotenvResult.error) {
     throw dotenvResult.error;
   }
-  //
-  const qpub = new MessageQueueService<Podcast>(process.env.AMQP_URI, "foo");
-  await qpub.peek();
-  //
-
   rabbitmqConnection = new ConnectionManager(process.env.AMQP_URI);
+  //
+  // const qpub = new MessageQueueService<Podcast>(process.env.AMQP_URI, "foo");
+  // await qpub.peek();
+  //
+  await initQueues();
+  startQueueConsumers();
+
+  const storiesSubject = new Subject<HackerNewsStory>();
+  const storiesProducer = new QueueProducer<HackerNewsStory>(
+    "stories",
+    rabbitmqConnection,
+    new JsonSerializer()
+  );
+  await storiesProducer.pipeToQueue(storiesSubject.asObservable());
+  const stories = await getTopStories();
+  stories.forEach((s) => storiesSubject.next(s));
+
+  return;
   const q = new QueueConsumer<Podcast>(
     "foo",
     rabbitmqConnection,
     new JsonSerializer<Podcast>()
   );
-
-  const subscription = q.stream.subscribe(
-    (e) => {
-      console.log("ENVELOP", e);
-      e.acknowledge();
+  const stream = await q.startConsumingQueue();
+  const subscription = stream.subscribe(
+    (msg) => {
+      console.log("ENVELOP", msg);
+      msg.acknowledge();
     },
-    (e) => {
-      console.warn(`ERRRRRR`, e);
+    (err) => {
+      console.warn(`ERRRRRR`, err);
     },
     () => {
       console.log("Stream is closed!");
     }
   );
-  await q.consumeQueue();
 
   return;
 

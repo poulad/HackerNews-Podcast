@@ -1,6 +1,10 @@
 import { MessageSerializer } from "./message-serializer";
 
 export class JsonSerializer<TMessage> implements MessageSerializer<TMessage> {
+  get contnetType() {
+    return "application/json";
+  }
+
   serialize(message: TMessage): Buffer {
     return Buffer.from(JSON.stringify(message));
   }
