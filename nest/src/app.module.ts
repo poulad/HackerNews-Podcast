@@ -1,15 +1,19 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import rabbitmqConfig from 'config/rabbitmq-config';
+import { ScheduleModule } from '@nestjs/schedule';
+import rabbitmqConfig from './config/rabbitmq-config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { MessageQueueService } from './services/message-queue.service';
+import { TasksService } from './services/tasks.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [rabbitmqConfig],
     }),
+    ScheduleModule.forRoot(),
     ClientsModule.register([
       {
         name: 'STORIES_SERVICE',
@@ -29,6 +33,6 @@ import { AppService } from './app.service';
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MessageQueueService, TasksService],
 })
 export class AppModule {}
