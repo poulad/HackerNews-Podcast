@@ -6,8 +6,11 @@ export class MessageQueueService {
   private _channel: ConfirmChannel;
   private _conn: Connection;
 
-  sendToQueue(queue: string, payload: any) {
-    const serializedPayload = JSON.stringify(payload);
+  sendToQueue(queue: string, payload: any, eventPattern?: string) {
+    const serializedPayload = JSON.stringify({
+      data: payload,
+      pattern: eventPattern || queue,
+    });
     this._channel.sendToQueue(queue, Buffer.from(serializedPayload), {
       persistent: true,
       contentType: 'application/json',

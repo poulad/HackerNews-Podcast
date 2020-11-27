@@ -162,7 +162,6 @@ async function main() {
     throw dotenvResult.error;
   }
   rabbitmqConnection = new ConnectionManager(process.env.AMQP_URI);
-  //
   // const qpub = new MessageQueueService<Podcast>(process.env.AMQP_URI, "foo");
   // await qpub.peek();
   //

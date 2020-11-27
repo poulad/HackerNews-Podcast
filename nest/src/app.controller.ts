@@ -1,22 +1,42 @@
-import { Controller } from '@nestjs/common';
-import { Ctx, EventPattern, RmqContext } from '@nestjs/microservices';
-import { AppService } from './app.service';
+import { Controller, Get, Logger } from '@nestjs/common';
+import {
+  Ctx,
+  EventPattern,
+  Payload,
+  RmqContext,
+  Transport,
+} from '@nestjs/microservices';
 import { ConfirmChannel, Message } from 'amqplib';
-import { HackerNewsStory } from './models/hacker-news-story';
+import { Podcast } from './models/podcast';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly logger: Logger) {}
 
-  @EventPattern()
-  consumeMessage(_: any, @Ctx() context: RmqContext) {
-    console.log(`Pattern: ${context.getPattern()}`);
+  @Get()
+  home() {
+    return 'hello, world!';
+  }
+
+  @EventPattern('stories', Transport.RMQ)
+  consumeStoryMessage(@Payload() data: Podcast, @Ctx() context: RmqContext) {
+    this.logger.debug(`Received event ${context.getPattern()}`);
 
     const channel: ConfirmChannel = context.getChannelRef();
     const msg = context.getMessage() as Message;
-    const payload: HackerNewsStory = JSON.parse(msg.content.toString());
 
-    console.log(`PAYLOAD: ${JSON.stringify(payload)}`);
-    // channel.ack(msg);
+    this.logger.log(`PAYLOAD: ${JSON.stringify(data)}`);
+    channel.ack(msg);
+  }
+
+  @EventPattern('texts', Transport.RMQ)
+  consumeTextMessage(@Payload() data: Podcast, @Ctx() context: RmqContext) {
+    this.logger.debug(`Received event ${context.getPattern()}`);
+
+    const channel: ConfirmChannel = context.getChannelRef();
+    const msg = context.getMessage() as Message;
+
+    this.logger.log(`PAYLOAD: ${JSON.stringify(data)}`);
+    channel.ack(msg);
   }
 }
