@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ClientsModule } from '@nestjs/microservices';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
+import { AudioService } from './audio/audio.service';
 import { getRabbitmqOptions } from './config/rabbitmq-config';
 import { ProviderTokens } from './constants';
 import { TasksService } from './shared/tasks.service';
@@ -33,6 +34,6 @@ import { TextService } from './text/text.service';
     ]),
   ],
   controllers: [AppController],
-  providers: [StoryService, TasksService, TextService],
+  providers: [StoryService, TasksService, TextService, AudioService],
 })
 export class AppModule {}

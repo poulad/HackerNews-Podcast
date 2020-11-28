@@ -1,13 +1,12 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import Axios, { AxiosResponse } from 'axios';
-import { QueueMessageHandler } from 'src/shared/queue-message-handler';
 import { ProviderTokens } from '../constants';
-import { HackerNewsStory } from '../models/hacker-news-story';
-import { Podcast } from '../models/podcast';
+import { HackerNewsStory } from '../shared/models/hacker-news-story';
+import { Podcast } from '../shared/models/podcast';
 
 @Injectable()
-export class StoryService implements QueueMessageHandler<Podcast> {
+export class StoryService {
   private readonly logger = new Logger(StoryService.name);
   readonly STORY_LIMIT = 2;
 
@@ -54,19 +53,5 @@ export class StoryService implements QueueMessageHandler<Podcast> {
     stories
       .map((story) => ({ story } as Podcast))
       .forEach((p) => this.storiesQueue.emit('stories', p));
-  }
-
-  async handleMessage(podcast: Podcast): Promise<void> {
-    this.textsQueue.emit('texts', { foo: 'bar' }).subscribe(
-      (val) => {
-        this.logger.debug(`VALUE IS ${val}`);
-      },
-      (err) => {
-        this.logger.warn(`ERR IS ${err}`);
-      },
-      () => {
-        this.logger.debug(`DONE`);
-      },
-    );
   }
 }
