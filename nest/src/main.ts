@@ -10,7 +10,9 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>(getRabbitmqOptions('audios'));
 
   await app.startAllMicroservicesAsync();
-  await app.listen(3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  console.log(`Application is started. Listening on port ${port}...`);
 }
 
 bootstrap();

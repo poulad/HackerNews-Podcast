@@ -1,6 +1,5 @@
-import { Controller, Get, Inject, Logger } from '@nestjs/common';
+import { Controller, Get, Logger } from '@nestjs/common';
 import {
-  ClientProxy,
   Ctx,
   EventPattern,
   Payload,
@@ -8,19 +7,17 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { ConfirmChannel, Message } from 'amqplib';
-import { ProviderTokens } from './constants';
 import { Podcast } from './models/podcast';
+import { StoryService } from './story/story.service';
+import { TextService } from './text/text.service';
 
 @Controller()
 export class AppController {
+  private readonly logger = new Logger(AppController.name);
+
   constructor(
-    @Inject(ProviderTokens.TEXTS_QUEUE)
-    private readonly textsQueue: ClientProxy,
-    @Inject(ProviderTokens.AUDIOS_QUEUE)
-    private readonly auidiosQueue: ClientProxy,
-    @Inject(ProviderTokens.PODCASTS_QUEUE)
-    private readonly podcastsQueue: ClientProxy,
-    private readonly logger: Logger,
+    private readonly storyService: StoryService,
+    private readonly textService: TextService,
   ) {}
 
   @Get()
@@ -29,36 +26,62 @@ export class AppController {
   }
 
   @EventPattern('stories', Transport.RMQ)
-  consumeStoryMessage(@Payload() data: Podcast, @Ctx() context: RmqContext) {
-    this.logger.debug(`Received event ${context.getPattern()}`);
+  async consumeStoryMessage(
+    @Payload() data: Podcast,
+    @Ctx() context: RmqContext,
+  ): Promise<void> {
+    const queue = context.getPattern();
+    this.logger.debug(`Received a message on queue ${JSON.stringify(queue)}.`);
 
-    this.textsQueue.emit('texts', { foo: 'bar' }).subscribe(
-      (val) => {
-        this.logger.debug(`VALUE IS ${val}`);
-      },
-      (err) => {
-        this.logger.warn(`ERR IS ${err}`);
-      },
-      () => {
-        this.logger.debug(`DONE`);
-      },
+    try {
+      await this.storyService.handleMessage(data);
+    } catch (e) {
+      this.logger.error(
+        `Failed to handle message on queue ${JSON.stringify(queue)}. ${
+          e.message
+        }`,
+        e.stack,
+      );
+      return;
+    }
+
+    this.logger.debug(
+      `Message from queue ${JSON.stringify(
+        queue,
+      )} was processed successfully. Acknowledging the message...`,
     );
-
-    const channel: ConfirmChannel = context.getChannelRef();
-    const msg = context.getMessage() as Message;
-
-    this.logger.log(`PAYLOAD: ${JSON.stringify(data)}`);
-    channel.ack(msg);
+    const channel = context.getChannelRef() as ConfirmChannel;
+    const message = context.getMessage() as Message;
+    channel.ack(message);
   }
 
   @EventPattern('texts', Transport.RMQ)
-  consumeTextMessage(@Payload() data: Podcast, @Ctx() context: RmqContext) {
-    this.logger.debug(`Received event ${context.getPattern()}`);
+  async consumeTextMessage(
+    @Payload() data: Podcast,
+    @Ctx() context: RmqContext,
+  ): Promise<void> {
+    const queue = context.getPattern();
+    this.logger.debug(`Received a message on queue ${JSON.stringify(queue)}.`);
 
-    const channel: ConfirmChannel = context.getChannelRef();
-    const msg = context.getMessage() as Message;
+    try {
+      await this.textService.handleMessage(data);
+    } catch (e) {
+      this.logger.error(
+        `Failed to handle message on queue ${JSON.stringify(queue)}. ${
+          e.message
+        }`,
+        e.stack,
+      );
+      return;
+    }
 
-    this.logger.log(`PAYLOAD: ${JSON.stringify(data)}`);
-    channel.ack(msg);
+    this.logger.debug(
+      `Message from queue ${JSON.stringify(
+        queue,
+      )} was processed successfully. Acknowledging the message...`,
+    );
+    const channel = context.getChannelRef() as ConfirmChannel;
+    const message = context.getMessage() as Message;
+    channel.ack(message);
   }
 }

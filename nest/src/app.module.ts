@@ -1,11 +1,13 @@
-import { Logger, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule } from '@nestjs/microservices';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { getRabbitmqOptions } from './config/rabbitmq-config';
 import { ProviderTokens } from './constants';
-import { TasksService } from './services/tasks.service';
+import { TasksService } from './shared/tasks.service';
+import { StoryService } from './story/story.service';
+import { TextService } from './text/text.service';
 
 @Module({
   imports: [
@@ -31,6 +33,6 @@ import { TasksService } from './services/tasks.service';
     ]),
   ],
   controllers: [AppController],
-  providers: [Logger, TasksService],
+  providers: [StoryService, TasksService, TextService],
 })
 export class AppModule {}
