@@ -1,9 +1,14 @@
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
-export function getQueuesList() {
-  return (process.env.HNP_AMQP_QUEUES || 'stories;texts;;audios;podcasts')
+export function getAllQueueNames() {
+  return ['stories', 'texts', 'audios', 'podcasts'];
+}
+
+export function getAvailableQueueNames() {
+  const excluded = (process.env.HNP_AMQP_QUEUES_EXCLUDED || '')
     .split(';')
     .filter((q) => q.length > 0);
+  return getAllQueueNames().filter((q) => !excluded.includes(q));
 }
 
 export function getRabbitmqOptions(queue: string): MicroserviceOptions {

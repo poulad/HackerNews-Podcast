@@ -1,11 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
-import { getQueuesList, getRabbitmqOptions } from './config';
+import { getAvailableQueueNames, getRabbitmqOptions } from './config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  getQueuesList()
+  getAvailableQueueNames()
     .map((queue) => ({
       queue,
       rmqOptions: getRabbitmqOptions(queue),
