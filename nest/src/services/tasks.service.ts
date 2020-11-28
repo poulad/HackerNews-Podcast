@@ -1,15 +1,19 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { Timeout } from '@nestjs/schedule';
 import Axios, { AxiosResponse } from 'axios';
+import { ProviderTokens } from 'src/constants';
 import { HackerNewsStory } from '../models/hacker-news-story';
-import { MessageQueueService } from './message-queue.service';
 
 @Injectable()
 export class TasksService {
   STORY_LIMIT = 2;
   private readonly logger = new Logger(TasksService.name);
 
-  constructor(private readonly storiesQueue: MessageQueueService) {}
+  constructor(
+    @Inject(ProviderTokens.STORIES_QUEUE)
+    private readonly storiesQueue: ClientProxy,
+  ) {}
 
   @Timeout(1_000)
   async getTopHackerNewsStories() {
@@ -43,7 +47,6 @@ export class TasksService {
       }
     }
 
-    await this.storiesQueue.ensureConnected();
-    stories.forEach((s) => this.storiesQueue.sendToQueue('stories', s));
+    stories.forEach((s) => this.storiesQueue.emit('stories', s));
   }
 }
