@@ -22,7 +22,7 @@ export class TextService implements QueueMessageHandler<Podcast> {
 
   async extractTextFromArticle(url: string): Promise<CleanText> {
     // TODO handle rate limits. see https://extractarticletext.com/docs/#section/Overview/API-Key
-    const apikey = `${process.env.EXTRACTOR_API_KEY}`;
+    const apikey = `${process.env.HNP_EXTRACTOR_API_KEY}`;
     const resp = await Axios.get('extractor', {
       baseURL: 'https://extractorapi.com/api/v1',
       params: { apikey, url },

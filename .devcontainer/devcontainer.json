@@ -1,5 +1,5 @@
 {
-  "name": "hacker-news-podcast/voice",
+  "name": "hackernews-podcast",
   "service": "app",
   "dockerComposeFile": "docker-compose.yml",
   "workspaceFolder": "/workspace",

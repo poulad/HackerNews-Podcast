@@ -4,7 +4,7 @@ import { ClientsModule } from '@nestjs/microservices';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AudioService } from './audio/audio.service';
-import { getRabbitmqOptions } from './config/rabbitmq-config';
+import { getQueuesList, getRabbitmqOptions } from './config';
 import { ProviderTokens } from './constants';
 import { TasksService } from './shared/tasks.service';
 import { StoryService } from './story/story.service';
@@ -14,24 +14,12 @@ import { TextService } from './text/text.service';
   imports: [
     ConfigModule.forRoot(),
     ScheduleModule.forRoot(),
-    ClientsModule.register([
-      {
-        name: ProviderTokens.STORIES_QUEUE,
-        ...(getRabbitmqOptions('stories') as any),
-      },
-      {
-        name: ProviderTokens.TEXTS_QUEUE,
-        ...(getRabbitmqOptions('texts') as any),
-      },
-      {
-        name: ProviderTokens.AUDIOS_QUEUE,
-        ...(getRabbitmqOptions('audios') as any),
-      },
-      {
-        name: ProviderTokens.PODCASTS_QUEUE,
-        ...(getRabbitmqOptions('podcasts') as any),
-      },
-    ]),
+    ClientsModule.register(
+      getQueuesList().map((queue) => ({
+        name: ProviderTokens[`${queue}_QUEUE`.toUpperCase()],
+        ...(getRabbitmqOptions(queue) as any),
+      })),
+    ),
   ],
   controllers: [AppController],
   providers: [StoryService, TasksService, TextService, AudioService],

@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Timeout } from '@nestjs/schedule';
+import { Cron, Timeout } from '@nestjs/schedule';
 import { StoryService } from 'src/story/story.service';
 
 @Injectable()
@@ -9,6 +9,7 @@ export class TasksService {
   constructor(private readonly storyService: StoryService) {}
 
   @Timeout(1_000)
+  @Cron('0 0 0 * * *', { name: 'End Of Day', utcOffset: 0 })
   async hackerNewsStories(): Promise<void> {
     this.logger.log(`Task ${this.hackerNewsStories.name} is triggered.`);
     try {
