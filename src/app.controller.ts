@@ -1,4 +1,4 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import { Controller, Get, Logger, Redirect } from '@nestjs/common';
 import {
   Ctx,
   EventPattern,
@@ -20,10 +20,9 @@ export class AppController {
     private readonly audioService: AudioService,
   ) {}
 
-  @Get()
-  home() {
-    return 'hello, world!';
-  }
+  @Get('*')
+  @Redirect('https://hacker-news-podcast.vercel.app')
+  home() {}
 
   @EventPattern('stories', Transport.RMQ)
   async consumeStoryMessage(

@@ -13,8 +13,6 @@ export class StoryService {
   constructor(
     @Inject(ProviderTokens.STORIES_QUEUE)
     private readonly storiesQueue: ClientProxy,
-    @Inject(ProviderTokens.TEXTS_QUEUE)
-    private readonly textsQueue: ClientProxy,
   ) {}
 
   async publishTopHackerNewsStories(): Promise<void> {
