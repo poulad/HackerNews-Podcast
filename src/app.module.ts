@@ -16,7 +16,6 @@ import { StoryService } from './story/story.service';
 import { TextService } from './text/text.service';
 import { AudioService } from './audio/audio.service';
 import { PodcastService } from './podcast/podcast.service';
-import { Episode } from './podcast/episode.entity';
 
 @Module({
   imports: [

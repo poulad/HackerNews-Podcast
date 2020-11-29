@@ -1,4 +1,13 @@
-import { Controller, Get, Logger, Redirect } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Header,
+  Logger,
+  Param,
+  Redirect,
+  Res,
+} from '@nestjs/common';
 import {
   Ctx,
   EventPattern,
@@ -11,6 +20,8 @@ import { Podcast } from './shared/models/podcast';
 import { AudioService } from './audio/audio.service';
 import { TextService } from './text/text.service';
 import { PodcastService } from './podcast/podcast.service';
+import { EpisodeDto } from './podcast/episode.dto';
+import { ServerResponse } from 'http';
 
 @Controller()
 export class AppController {
@@ -21,6 +32,41 @@ export class AppController {
     private readonly audioService: AudioService,
     private readonly podcastService: PodcastService,
   ) {}
+
+  @Get('api/episodes')
+  async getEpisodes() {
+    let responseStatus = 200;
+    const response = {
+      data: null as EpisodeDto[],
+      error: null,
+    };
+    try {
+      response.data = await this.podcastService.getAllEpisodes();
+    } catch (e) {
+      this.logger.error(`Failed to get the episodes. ${e.message}`, e.stack);
+      responseStatus = 500;
+      response.error.message = 'Unexpected error happened!';
+    }
+
+    return response;
+  }
+
+  @Get('api/episodes/:storyId/audio.wav')
+  async getEpisodeAudioFile(@Param() params: any, @Res() res: ServerResponse) {
+    const storyId = parseInt(params.storyId);
+    if (!storyId) {
+      throw new BadRequestException(null, `Invalid episode ID.`);
+    }
+
+    const content = await this.podcastService.getEpisodeAudio(storyId);
+    if (!content) {
+      throw new BadRequestException(null, `Episode not found.`);
+    }
+    res.setHeader('Content-Type', 'audio/wav');
+    res.setHeader('Content-Length', content.length);
+    // TODO stream the binary contnet
+    res.write(content);
+  }
 
   @Get('*')
   @Redirect('https://hacker-news-podcast.vercel.app')

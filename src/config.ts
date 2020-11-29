@@ -1,6 +1,7 @@
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
-import { Episode } from './podcast/episode.entity';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { join } from 'path';
+import { Episode } from './shared/episode.entity';
 
 export function getAllQueueNames() {
   return ['stories', 'texts', 'audios', 'podcasts'];
@@ -49,3 +50,7 @@ export function getTypeOrmOptions(): TypeOrmModuleOptions {
 }
 
 export const ENTITIES_LIST = [Episode];
+
+export function getAudiosOutputDirectory() {
+  return process.env.HNP_AUDIO_DIR || join(__dirname, '../tts');
+}

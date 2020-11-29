@@ -5,6 +5,11 @@
 <!--
 NOTES:
 
-winpty docker run --rm -it --tty --publish 5002:5002 --name tts synesthesiam/mozillatts
+
+docker run --publish 5002:5002 --name tts --detach synesthesiam/mozillatts
+
+docker logs --follow tts
+
+docker rm -fv tts
 
 -->

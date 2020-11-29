@@ -6,7 +6,9 @@ CREATE TABLE episode (
     title TEXT NOT NULL,
     description TEXT,
     image_url TEXT,
-    audio_url TEXT NOT NULL,
+    audio_url TEXT,
+    audio_content TEXT,
+    audio_type VARCHAR(20),
     audio_size INTEGER NOT NULL,
     duration INTEGER NOT NULL,
     published_at DATE NOT NULL

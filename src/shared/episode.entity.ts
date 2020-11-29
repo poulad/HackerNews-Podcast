@@ -20,6 +20,12 @@ export class Episode {
   @Column({ name: 'audio_url' })
   audioUrl: string;
 
+  @Column({ name: 'audio_content' })
+  audioContnet: string;
+
+  @Column({ name: 'audio_type' })
+  audioType: string;
+
   @Column({ name: 'audio_size' })
   audioSize: number;
 

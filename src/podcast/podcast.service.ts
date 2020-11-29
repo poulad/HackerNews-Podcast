@@ -5,7 +5,8 @@ import { Repository } from 'typeorm';
 import { ProviderTokens } from '../constants';
 import { Podcast } from '../shared/models/podcast';
 import { QueueMessageHandler } from '../shared/queue-message-handler';
-import { Episode } from './episode.entity';
+import { Episode } from '../shared/episode.entity';
+import { EpisodeDto } from './episode.dto';
 
 @Injectable()
 export class PodcastService implements QueueMessageHandler<Podcast> {
@@ -19,22 +20,40 @@ export class PodcastService implements QueueMessageHandler<Podcast> {
   ) {}
 
   async handleMessage(podcast: Podcast): Promise<void> {
-    try {
-      // TODO upsert instead
-      // TODO or if message is duplicated, put it on an errors queue
-      const res = await this.episodesRepo.save({
-        storyId: podcast.story.id,
-        title: podcast.story.title,
-        audioUrl: podcast.audio.file,
-        audioSize: podcast.audio.length,
-        duration: 60, // TODO seconds
-        pubilshedAt: new Date(podcast.story.time),
-      });
-      res.id;
-    } catch (e) {
-      this.logger.warn(e);
-    }
-
+    // TODO push updates to the frontend
     throw new Error(`Not implemented`);
+  }
+
+  async getAllEpisodes(): Promise<EpisodeDto[]> {
+    const entities = await this.episodesRepo.find({
+      select: [
+        'storyId',
+        'title',
+        'description',
+        'audioType',
+        'audioSize',
+        'duration',
+      ],
+    });
+    return (entities || []).map((e) => ({
+      id: e.storyId.toString(),
+      title: e.title,
+      description: e.description,
+      audio: {
+        url: `https://hackernews-podcast.herokuapp.com/api/episodes/${e.storyId}/audio.wav`,
+        format: e.audioType,
+        size: e.audioSize,
+      },
+      duration: e.duration,
+    }));
+  }
+
+  async getEpisodeAudio(storyId: number): Promise<Buffer> {
+    const entity = await this.episodesRepo.findOne({
+      where: { storyId },
+      select: ['audioContnet'],
+    });
+
+    return entity ? Buffer.from(entity.audioContnet, 'base64') : null;
   }
 }

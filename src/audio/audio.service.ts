@@ -1,14 +1,18 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import Axios, { AxiosError } from 'axios';
 import { join, dirname } from 'path';
-import { mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { ProviderTokens } from '../constants';
 import { Podcast } from '../shared/models/podcast';
 import { QueueMessageHandler } from '../shared/queue-message-handler';
 import { delay } from '../shared/utils';
+import { Episode } from '../shared/episode.entity';
+import { getAudiosOutputDirectory } from '../config';
 
 @Injectable()
 export class AudioService implements QueueMessageHandler<Podcast> {
@@ -17,20 +21,30 @@ export class AudioService implements QueueMessageHandler<Podcast> {
   constructor(
     @Inject(ProviderTokens.AUDIOS_QUEUE)
     private readonly audiosQueue: ClientProxy,
+    @InjectRepository(Episode)
+    private episodesRepo: Repository<Episode>,
   ) {}
 
   async handleMessage(podcast: Podcast): Promise<void> {
-    const sentences = this.splitTextIntoChunks(podcast.text.text);
+    const isStoryPrcessed = await this.isStoryProcessed(podcast.story.id);
+    if (isStoryPrcessed) {
+      this.logger.warn(
+        `Story ${podcast.story.id} is already processed. Skipping...`,
+      );
+      return;
+    }
 
     podcast.audio = {
-      file: join(__dirname, `../stories/${podcast.story.id}/audio.wav`),
+      file: join(getAudiosOutputDirectory(), `${podcast.story.id}/audio.wav`),
       format: 'audio/wav',
       length: 1,
     };
 
     const outputDir = dirname(podcast.audio.file);
+    this.logger.log(`Output audio directory is ${JSON.stringify(outputDir)}.`);
     mkdirSync(outputDir, { recursive: true });
 
+    const sentences = this.splitTextIntoChunks(podcast.text.text);
     for (let i = 0; i < sentences.length; i++) {
       await this.synthesizeSpeechForSentence(
         sentences[i],
@@ -44,8 +58,35 @@ export class AudioService implements QueueMessageHandler<Podcast> {
       podcast.audio.file,
     );
 
+    await this.persistEpisode(podcast, podcast.audio.file);
+
     // delete podcast.text.text;
     await this.audiosQueue.emit('audios', podcast).toPromise();
+  }
+
+  private async isStoryProcessed(storyId: number): Promise<boolean> {
+    const entity = await this.episodesRepo.findOne({ where: { storyId } });
+    return !!entity;
+  }
+
+  private async persistEpisode(podcast: Podcast, filePath: string) {
+    const audioContnet = readFileSync(filePath, { encoding: 'base64' });
+    try {
+      // TODO upsert instead
+      // TODO or if message is duplicated, put it on an errors queue
+      const entity = await this.episodesRepo.save({
+        storyId: podcast.story.id,
+        title: podcast.story.title,
+        audioSize: podcast.audio.length,
+        audioType: podcast.audio.format,
+        audioContnet: audioContnet.toString(),
+        duration: 60, // TODO seconds
+        pubilshedAt: new Date(podcast.story.time),
+      });
+      entity.id;
+    } catch (e) {
+      this.logger.warn(e);
+    }
   }
 
   private async synthesizeSpeechForSentence(sentence, filename) {
@@ -90,26 +131,3 @@ export class AudioService implements QueueMessageHandler<Podcast> {
       .map((chunk) => chunk + '.');
   }
 }
-
-// const episode = {
-//   id: "wiki-wikipedia",
-//   name: "The Wikipedia Wiki",
-//   sentences: [
-//     `Other collaborative online encyclopedias were attempted before Wikipedia, but none were as successful.`,
-//     `Wikipedia began as a complementary project for Nupedia, a free online English-language encyclopedia project whose articles were written by experts and reviewed under a formal process.`,
-//     `It was founded on March 9, 2000, under the ownership of Bomis, a web portal company.`,
-//     `Its main figures were Bomis CEO Jimmy Wales and Larry Sanger, editor-in-chief for Nupedia and later Wikipedia.`,
-//     `Nupedia was initially licensed under its own Nupedia Open Content License, but even before Wikipedia was founded, Nupedia switched to the GNU Free Documentation License at the urging of Richard Stallman.`,
-//     `Wales is credited with defining the goal of making a publicly editable encyclopedia, while Sanger is credited with the strategy of using a wiki to reach that goal.`,
-//     `On January 10, 2001, Sanger proposed on the Nupedia mailing list to create a wiki as a "feeder" project for Nupedia.`,
-//     `Launch and early growth.`,
-//     `The domains wikipedia-dot-com and wikipedia-dot-org were registered on January 12, 2001 and January 13, 2001 respectively, and Wikipedia was launched on January 15, 2001, as a single English-language edition at www-dot-wikipedia-dot-com, and announced by Sanger on the Nupedi a mailing list.`,
-//     `Wikipedia's policy of "neutral point-of-view" was codified in its first few months.`,
-//     `Otherwise, there were relatively few rules initially and Wikipedia operated independently of Nupedia.`,
-//     `Originally, Bomis intended to make Wikipedia a business for profit.`,
-//     `Wikipedia gained early contributors from Nupedia, Slashdot postings, and web search engine indexing.`,
-//     `Language editions were also created, with a total of 161 by the end of 2004.`,
-//     `Nupedia and Wikipedia coexisted until the former's servers were taken down permanently in 2003, and its text was incorporated into Wikipedia.`,
-//     `The English Wikipedia passed the mark of two million articles on September 9, 2007, making it the largest encyclopedia ever assembled, surpassing the Yongle Encyclopedia made during the Ming Dynasty in 1408, which had held the record for almost 600 years.`,
-//   ],
-// };
