@@ -8,6 +8,7 @@ import { exec } from 'child_process';
 import { ProviderTokens } from '../constants';
 import { Podcast } from '../shared/models/podcast';
 import { QueueMessageHandler } from '../shared/queue-message-handler';
+import { delay } from '../shared/utils';
 
 @Injectable()
 export class AudioService implements QueueMessageHandler<Podcast> {
@@ -29,11 +30,14 @@ export class AudioService implements QueueMessageHandler<Podcast> {
 
     const outputDir = dirname(podcast.audio.file);
     mkdirSync(outputDir, { recursive: true });
-    await Promise.all(
-      sentences.map((sentence, i) =>
-        this.synthesizeSpeechForSentence(sentence, `${outputDir}/${i}.wav`),
-      ),
-    );
+
+    for (let i = 0; i < sentences.length; i++) {
+      await this.synthesizeSpeechForSentence(
+        sentences[i],
+        `${outputDir}/${i}.wav`,
+      );
+      await delay(2_000);
+    }
 
     await this.combineAudioChunks(
       sentences.map((_, i) => `${outputDir}/${i}.wav`),

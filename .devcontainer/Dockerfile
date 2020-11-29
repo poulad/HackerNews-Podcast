@@ -16,4 +16,4 @@ RUN set -x \
 # ARG EXTRA_NODE_VERSION=10
 # RUN su node -c "source /usr/local/share/nvm/nvm.sh && nvm install ${EXTRA_NODE_VERSION}"
 
-RUN sudo -u node npm install --global npm typescript tslint
+RUN sudo -u node npm install --global npm typescript tslint @nestjs/cli
