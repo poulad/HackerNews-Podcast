@@ -20,7 +20,7 @@ workflows:
   node-tests:
     jobs:
       - node/test
-  hourly:
+  hourly1:
     triggers:
       - schedule:
           cron: "0 0 * * *"
@@ -29,4 +29,14 @@ workflows:
               only:
                 - master
     jobs:
-      - node/test
+      - keepwarm
+  hourly2:
+    triggers:
+      - schedule:
+          cron: "0 30 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - keepwarm
