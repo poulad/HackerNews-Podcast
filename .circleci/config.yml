@@ -5,3 +5,12 @@ workflows:
   node-tests:
     jobs:
       - node/test
+  hourly:
+    triggers:
+      - schedule:
+          cron: "0 */29 * * *"
+    jobs:
+      - keepwarm:
+          steps:
+            - run: echo "hello world"
+            - run: curl -fL "https://hackernews-podcast.herokuapp.com/_keepwarm"
