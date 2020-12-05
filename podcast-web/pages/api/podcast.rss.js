@@ -1,9 +1,8 @@
 import Axios from 'axios';
-import { writeFileSync } from 'fs';
 
 export default async (req, res) => {
   const rss = await generateRss();
-  writeFileSync('public/podcast.rss', rss, 'utf8');
+  // writeFileSync('public/podcast.rss', rss, 'utf8');
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/rss+xml');
   res.send(rss);
