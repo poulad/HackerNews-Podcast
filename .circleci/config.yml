@@ -13,7 +13,7 @@ jobs:
     executor: docker-node
     steps:
       - run: echo "hello world"
-      - run: curl -fL "https://hackernews-podcast.herokuapp.com/_keepwarm"
+      - run: curl -LS "https://hackernews-podcast.herokuapp.com/_keepwarm"
 
 
 workflows:
