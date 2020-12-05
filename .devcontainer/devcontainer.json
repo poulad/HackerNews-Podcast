@@ -14,9 +14,7 @@
     "esbenp.prettier-vscode"
   ],
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [
-    5002
-  ],
+  "forwardPorts": [5002],
   // Use 'postCreateCommand' to run commands after the container is created.
   // "postCreateCommand": "yarn install",
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.

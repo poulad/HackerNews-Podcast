@@ -2,9 +2,9 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import Axios, { AxiosError } from 'axios';
+import Axios from 'axios';
 import { join, dirname } from 'path';
-import { mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { ProviderTokens } from '../constants';
@@ -34,6 +34,8 @@ export class AudioService implements QueueMessageHandler<Podcast> {
       return;
     }
 
+    this.logger.log(`Processing story ${podcast.story.id}...`);
+
     podcast.audio = {
       file: join(getAudiosOutputDirectory(), `${podcast.story.id}/audio.wav`),
       format: 'audio/wav',
@@ -44,12 +46,15 @@ export class AudioService implements QueueMessageHandler<Podcast> {
     this.logger.log(`Output audio directory is ${JSON.stringify(outputDir)}.`);
     mkdirSync(outputDir, { recursive: true });
 
-    const sentences = this.splitTextIntoChunks(podcast.text.text);
+    const sentences = this.splitTextIntoChunks(podcast.text.text).filter(
+      (s) => s.length > 3,
+    );
     for (let i = 0; i < sentences.length; i++) {
-      await this.synthesizeSpeechForSentence(
-        sentences[i],
-        `${outputDir}/${i}.wav`,
-      );
+      const output = `${outputDir}/${i}.wav`;
+      if (existsSync(output)) {
+        continue;
+      }
+      await this.synthesizeSpeechForSentence(sentences[i], output);
       await delay(2_000);
     }
 
@@ -89,10 +94,14 @@ export class AudioService implements QueueMessageHandler<Podcast> {
     }
   }
 
-  private async synthesizeSpeechForSentence(sentence, filename) {
+  private async synthesizeSpeechForSentence(
+    sentence: string,
+    filename: string,
+  ) {
     try {
       const resp = await Axios.get('http://localhost:5002/api/tts', {
         params: {
+          file: filename,
           text: sentence,
         },
         responseType: 'arraybuffer',
@@ -104,23 +113,23 @@ export class AudioService implements QueueMessageHandler<Podcast> {
       }
     } catch (e) {
       this.logger.error(
-        `Failed.`,
-        (e as AxiosError).response.data.toString(),
-        e,
+        `Failed to sythesize speech via TTS API. ${
+          e.response?.data || e.message
+        }`,
+        e.stack,
       );
     }
   }
 
-  private async combineAudioChunks(chunks, output) {
-    const cunksWithGaps = chunks
-      .map((c) => [c, `./sln.wav`])
-      .reduce((prev, curr) => [...prev, ...curr], []);
+  private async combineAudioChunks(chunks: string[], output: string) {
     const commandText = ['sox', ...chunks, output]
       .map((x) => JSON.stringify(x))
       .join(' ');
 
     const execFn = promisify(exec);
     const { stdout, stderr } = await execFn(commandText);
+    this.logger.debug(`STDOUT: ${stdout}`);
+    this.logger.debug(`STDERR: ${stderr}`);
   }
 
   private splitTextIntoChunks(text: string): string[] {

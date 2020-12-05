@@ -14,7 +14,7 @@ export class TasksService {
     this.logger.log(`Task ${this.hackerNewsStories.name} is triggered.`);
     try {
       await this.storyService.publishTopHackerNewsStories();
-    } catch (e: Error | any) {
+    } catch (e) {
       this.logger.error(
         `Task ${this.hackerNewsStories.name} failed. ${e.message}`,
         e.stack,
