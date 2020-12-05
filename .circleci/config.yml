@@ -1,20 +1,17 @@
 version: 2.1
-jobs:
-
-  test:
-    docker:
-      - image: 'cimg/node:14.14.0'
-    steps:
-      - run: npm ci
-      - run: npm test
-
-
-  keepwarm:
+orbs:
+  node: circleci/node@3.0.0
+workflows:
+  node-tests:
+    jobs:
+      - node/test
+  hourly:
     triggers:
       - schedule:
           cron: "0 */29 * * *"
-    docker:
-      - image: 'cimg/node:14.14.0'
-    steps:
-      - run: echo "hello world"
-      - run: curl -fL "https://hackernews-podcast.herokuapp.com/_keepwarm"
+    jobs:
+      - node/test
+      # - keepwarm:
+      #     steps:
+      #       - run: echo "hello world"
+      #       - run: curl -fL "https://hackernews-podcast.herokuapp.com/_keepwarm"
