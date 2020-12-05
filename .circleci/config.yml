@@ -1,6 +1,21 @@
 version: 2.1
+
 orbs:
   node: circleci/node@3.0.0
+
+executors:
+  docker-node:
+    docker:
+      - image: cimg/node:14.14.0
+
+jobs:
+  keepwarm:
+    executor: docker-node
+    steps:
+      - run: echo "hello world"
+      - run: curl -fL "https://hackernews-podcast.herokuapp.com/_keepwarm"
+
+
 workflows:
   node-tests:
     jobs:
@@ -11,7 +26,3 @@ workflows:
           cron: "0 */29 * * *"
     jobs:
       - node/test
-      # - keepwarm:
-      #     steps:
-      #       - run: echo "hello world"
-      #       - run: curl -fL "https://hackernews-podcast.herokuapp.com/_keepwarm"
