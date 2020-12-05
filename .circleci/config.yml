@@ -20,20 +20,11 @@ workflows:
   node-tests:
     jobs:
       - node/test
+
   hourly1:
     triggers:
       - schedule:
           cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - keepwarm
-  hourly2:
-    triggers:
-      - schedule:
-          cron: "0 30 * * *"
           filters:
             branches:
               only:
