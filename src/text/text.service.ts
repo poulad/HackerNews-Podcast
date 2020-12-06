@@ -8,7 +8,7 @@ import { ProviderTokens } from '../constants';
 import { CleanText } from '../shared/models/clean-text';
 import { Podcast } from '../shared/models/podcast';
 import { QueueMessageHandler } from '../shared/queue-message-handler';
-import { isStoryProcessed } from '../shared/utils';
+import { delay, isStoryProcessed } from '../shared/utils';
 
 @Injectable()
 export class TextService implements QueueMessageHandler<Podcast> {
@@ -33,8 +33,14 @@ export class TextService implements QueueMessageHandler<Podcast> {
       return;
     }
 
+    if (podcast.story.url.endsWith('.pdf')) {
+      this.logger.warn(`Story ${podcast.story.id} is a PDF file. Skipping...`);
+      return;
+    }
+
     podcast.text = await this.extractTextFromArticle(podcast.story.url);
     await this.textsQueue.emit('texts', podcast).toPromise();
+    await delay(2_000); // TODO throttle requests.
   }
 
   async extractTextFromArticle(url: string): Promise<CleanText> {

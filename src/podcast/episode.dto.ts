@@ -6,4 +6,5 @@ export interface EpisodeDto {
   description: string;
   duration: number;
   audio: AudioDto;
+  pubilshedAt: Date;
 }

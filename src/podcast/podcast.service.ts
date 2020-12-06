@@ -41,11 +41,11 @@ export class PodcastService implements QueueMessageHandler<Podcast> {
     // writing sanitized html
     const description = `
 <strong>
-  <a target="${podcast.story.url}">${podcast.story.title}</a>
+  <a href="${podcast.story.url}">${podcast.story.title}</a>
 </strong>
 <br/>
 Posted by <code>${podcast.story.by}</code> on ${new Date(
-      podcast.story.title,
+      podcast.story.time,
     ).toLocaleDateString()}.
 <br/>
 ${podcast.story.score} Points
@@ -72,6 +72,7 @@ ${podcast.story.score} Points
         'audioType',
         'audioSize',
         'duration',
+        'pubilshedAt',
       ],
     });
     return (entities || []).map((e) => ({
@@ -84,6 +85,7 @@ ${podcast.story.score} Points
         size: e.audioSize,
       },
       duration: e.duration,
+      pubilshedAt: e.pubilshedAt,
     }));
   }
 

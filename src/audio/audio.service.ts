@@ -94,7 +94,7 @@ export class AudioService implements QueueMessageHandler<Podcast> {
         audioType: podcast.audio.format,
         audioContnet: audioContnet.toString(),
         duration: podcast.audio.duration,
-        pubilshedAt: new Date(podcast.story.time),
+        pubilshedAt: new Date(podcast.story.time * 1000),
       });
       entity.id;
     } catch (e) {

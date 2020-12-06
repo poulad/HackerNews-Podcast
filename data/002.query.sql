@@ -2,6 +2,9 @@ SELECT
     id,
     story_id,
     title,
-    description
+    description,
+    published_at
 FROM
-    episode;
+    episode
+ORDER BY
+    id DESC;
