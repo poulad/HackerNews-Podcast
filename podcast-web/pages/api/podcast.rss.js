@@ -36,7 +36,7 @@ async function generateRss() {
       <title>${e.title}</title>
       <description>${e.title}</description>
       <content:encoded><![CDATA[${e.description || ''}]]></content:encoded>
-      <pubDate>${publishedAt}</pubDate>
+      <pubDate>${e.pubilshedAt}</pubDate>
       <enclosure url="${e.audio.url}" type="${e.audio.format}" length="${
         e.audio.size
       }"/>
