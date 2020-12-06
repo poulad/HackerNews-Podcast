@@ -1,6 +1,7 @@
 SELECT
     id,
     story_id,
-    title
+    title,
+    description
 FROM
     episode;

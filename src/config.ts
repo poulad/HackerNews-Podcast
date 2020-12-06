@@ -4,7 +4,7 @@ import { join } from 'path';
 import { Episode } from './shared/episode.entity';
 
 export function getAllQueueNames() {
-  return ['stories', 'texts', 'audios', 'podcasts'];
+  return ['stories', 'texts', 'audios'];
 }
 
 export function getAvailableQueueNames() {

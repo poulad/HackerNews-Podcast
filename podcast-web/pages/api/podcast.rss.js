@@ -34,12 +34,15 @@ async function generateRss() {
       (e) => `
     <item>
       <title>${e.title}</title>
-      <description>${e.description || ''}</description>
+      <description>${e.title}</description>
+      <content:encoded><![CDATA[${e.description || ''}]]></content:encoded>
       <pubDate>Sat, 14 Nov 2020 00:09:00 GMT</pubDate>
       <enclosure url="${e.audio.url}" type="${e.audio.format}" length="${
         e.audio.size
       }"/>
-      <itunes:duration>${e.duration}</itunes:duration>
+      <itunes:duration>${new Date(e.duration * 1000)
+        .toISOString()
+        .substr(11, 8)}</itunes:duration>
       <itunes:image href="https://hacker-news-podcast.vercel.app/logo.png"/>
       <guid isPermaLink="false">${e.id}</guid>
     </item>

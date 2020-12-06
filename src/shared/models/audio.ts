@@ -1,5 +1,6 @@
 export interface Audio {
   file: string;
   format: string;
-  length: number;
+  size?: number;
+  duration?: number;
 }

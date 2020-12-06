@@ -1,10 +1,14 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import Axios from 'axios';
+import { Episode } from '../shared/episode.entity';
 import { ProviderTokens } from '../constants';
 import { CleanText } from '../shared/models/clean-text';
 import { Podcast } from '../shared/models/podcast';
 import { QueueMessageHandler } from '../shared/queue-message-handler';
+import { isStoryProcessed } from '../shared/utils';
 
 @Injectable()
 export class TextService implements QueueMessageHandler<Podcast> {
@@ -13,9 +17,22 @@ export class TextService implements QueueMessageHandler<Podcast> {
   constructor(
     @Inject(ProviderTokens.TEXTS_QUEUE)
     private readonly textsQueue: ClientProxy,
+    @InjectRepository(Episode)
+    private episodesRepo: Repository<Episode>,
   ) {}
 
   async handleMessage(podcast: Podcast): Promise<void> {
+    const isStoryPrcessed = await isStoryProcessed(
+      this.episodesRepo,
+      podcast.story.id,
+    );
+    if (isStoryPrcessed) {
+      this.logger.warn(
+        `Story ${podcast.story.id} is already processed. Skipping...`,
+      );
+      return;
+    }
+
     podcast.text = await this.extractTextFromArticle(podcast.story.url);
     await this.textsQueue.emit('texts', podcast).toPromise();
   }

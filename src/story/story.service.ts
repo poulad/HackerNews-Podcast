@@ -8,7 +8,7 @@ import { Podcast } from '../shared/models/podcast';
 @Injectable()
 export class StoryService {
   private readonly logger = new Logger(StoryService.name);
-  readonly STORY_LIMIT = 2;
+  readonly STORY_LIMIT = 10;
 
   constructor(
     @Inject(ProviderTokens.STORIES_QUEUE)
@@ -37,7 +37,7 @@ export class StoryService {
       } catch (e) {
         this.logger.warn(e);
       }
-      if (itemResponse.data.type !== 'story') {
+      if (itemResponse.data.type !== 'story' || !itemResponse.data.url) {
         continue;
       }
       stories.push(itemResponse.data);
