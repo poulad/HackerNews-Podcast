@@ -1,3 +1,4 @@
+import { ElasticsearchModuleOptions } from '@nestjs/elasticsearch';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { join } from 'path';
@@ -53,4 +54,13 @@ export const ENTITIES_LIST = [Episode];
 
 export function getAudiosOutputDirectory() {
   return process.env.HNP_AUDIO_DIR || join(__dirname, '../tts');
+}
+
+export function getElasticsearchOptions(): ElasticsearchModuleOptions {
+  // see https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/client-configuration.html
+  return {
+    node: process.env.HNP_ES_URL || 'http://localhost:9200',
+    maxRetries: 6,
+    requestTimeout: 60000,
+  };
 }

@@ -1,19 +1,22 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import Axios, { AxiosResponse } from 'axios';
+import { AppLogger } from '../shared/app-logger';
 import { ProviderTokens } from '../constants';
 import { HackerNewsStory } from '../shared/models/hacker-news-story';
 import { Podcast } from '../shared/models/podcast';
 
 @Injectable()
 export class StoryService {
-  private readonly logger = new Logger(StoryService.name);
   readonly STORY_LIMIT = 10;
 
   constructor(
     @Inject(ProviderTokens.STORIES_QUEUE)
     private readonly storiesQueue: ClientProxy,
-  ) {}
+    private readonly logger: AppLogger,
+  ) {
+    this.logger.setContext(StoryService.name);
+  }
 
   async publishTopHackerNewsStories(): Promise<void> {
     this.logger.log(`Getting top HackerNews stories...`);

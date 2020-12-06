@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm/dist/typeorm.module';
 import {
   ENTITIES_LIST,
   getAllQueueNames,
+  getElasticsearchOptions,
   getRabbitmqOptions,
   getTypeOrmOptions,
 } from './config';
@@ -16,10 +17,14 @@ import { StoryService } from './story/story.service';
 import { TextService } from './text/text.service';
 import { AudioService } from './audio/audio.service';
 import { PodcastService } from './podcast/podcast.service';
+import { AppLogger } from './shared/app-logger';
+import { ElasticsearchModule } from '@nestjs/elasticsearch';
+import { LogTransportService } from './shared/log-transport.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ElasticsearchModule.register(getElasticsearchOptions()),
     ScheduleModule.forRoot(),
     ClientsModule.register(
       getAllQueueNames().map((queue) => ({
@@ -32,6 +37,8 @@ import { PodcastService } from './podcast/podcast.service';
   ],
   controllers: [AppController],
   providers: [
+    AppLogger,
+    LogTransportService,
     StoryService,
     TasksService,
     TextService,

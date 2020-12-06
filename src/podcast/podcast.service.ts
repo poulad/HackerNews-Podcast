@@ -1,19 +1,21 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Podcast } from '../shared/models/podcast';
 import { QueueMessageHandler } from '../shared/queue-message-handler';
 import { Episode } from '../shared/episode.entity';
 import { EpisodeDto } from './episode.dto';
+import { AppLogger } from '../shared/app-logger';
 
 @Injectable()
 export class PodcastService implements QueueMessageHandler<Podcast> {
-  private readonly logger = new Logger(PodcastService.name);
-
   constructor(
     @InjectRepository(Episode)
     private episodesRepo: Repository<Episode>,
-  ) {}
+    private readonly logger: AppLogger,
+  ) {
+    this.logger.setContext(PodcastService.name);
+  }
 
   async handleMessage(podcast: Podcast): Promise<void> {
     // TODO push updates to the frontend
@@ -40,16 +42,19 @@ export class PodcastService implements QueueMessageHandler<Podcast> {
 
     // writing sanitized html
     const description = `
-<strong>
+<h5>
   <a href="${podcast.story.url}">${podcast.story.title}</a>
-</strong>
+</h5>
 <br/>
-Posted by <code>${podcast.story.by}</code> on ${new Date(
-      podcast.story.time,
+<a href="https://news.ycombinator.com/item?id=${
+      podcast.story.id
+    }">Story posted</a> by <pre>${podcast.story.by}</pre> on ${new Date(
+      podcast.story.time * 1000,
     ).toLocaleDateString()}.
 <br/>
 ${podcast.story.score} Points
 <br/>
+<p>${podcast.text.text.substr(0, 200)}...</p>
 `.trim();
 
     const result = await this.episodesRepo.update(

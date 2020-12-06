@@ -2,9 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 import { getAvailableQueueNames, getRabbitmqOptions } from './config';
+import { AppLogger } from './shared/app-logger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { logger: false });
+
+  app.useLogger(new AppLogger());
+
   getAvailableQueueNames()
     .map((queue) => ({
       queue,

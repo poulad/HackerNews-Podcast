@@ -2,8 +2,6 @@ import {
   BadRequestException,
   Controller,
   Get,
-  Header,
-  Logger,
   Param,
   Redirect,
   Res,
@@ -22,19 +20,24 @@ import { TextService } from './text/text.service';
 import { PodcastService } from './podcast/podcast.service';
 import { EpisodeDto } from './podcast/episode.dto';
 import { ServerResponse } from 'http';
+import { AppLogger } from './shared/app-logger';
 
 @Controller()
 export class AppController {
-  private readonly logger = new Logger(AppController.name);
-
   constructor(
     private readonly textService: TextService,
     private readonly audioService: AudioService,
     private readonly podcastService: PodcastService,
-  ) {}
+    private readonly logger: AppLogger,
+  ) {
+    this.logger.setContext(AppController.name);
+    this.logger.info(`starting app controller`);
+  }
 
   @Get('api/episodes')
   async getEpisodes() {
+    this.logger.debug('service.endpoint.api.get.episodes');
+
     let responseStatus = 200;
     const response = {
       data: null as EpisodeDto[],

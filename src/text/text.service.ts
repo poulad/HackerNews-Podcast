@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,17 +9,19 @@ import { CleanText } from '../shared/models/clean-text';
 import { Podcast } from '../shared/models/podcast';
 import { QueueMessageHandler } from '../shared/queue-message-handler';
 import { delay, isStoryProcessed } from '../shared/utils';
+import { AppLogger } from '../shared/app-logger';
 
 @Injectable()
 export class TextService implements QueueMessageHandler<Podcast> {
-  private readonly logger = new Logger(TextService.name);
-
   constructor(
     @Inject(ProviderTokens.TEXTS_QUEUE)
     private readonly textsQueue: ClientProxy,
     @InjectRepository(Episode)
     private episodesRepo: Repository<Episode>,
-  ) {}
+    private readonly logger: AppLogger,
+  ) {
+    this.logger.setContext(TextService.name);
+  }
 
   async handleMessage(podcast: Podcast): Promise<void> {
     const isStoryPrcessed = await isStoryProcessed(

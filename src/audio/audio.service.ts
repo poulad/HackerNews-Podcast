@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -17,17 +17,19 @@ import { QueueMessageHandler } from '../shared/queue-message-handler';
 import { delay, execCommand, isStoryProcessed } from '../shared/utils';
 import { Episode } from '../shared/episode.entity';
 import { getAudiosOutputDirectory } from '../config';
+import { AppLogger } from '../shared/app-logger';
 
 @Injectable()
 export class AudioService implements QueueMessageHandler<Podcast> {
-  private readonly logger = new Logger(AudioService.name);
-
   constructor(
     @Inject(ProviderTokens.AUDIOS_QUEUE)
     private readonly audiosQueue: ClientProxy,
     @InjectRepository(Episode)
     private episodesRepo: Repository<Episode>,
-  ) {}
+    private readonly logger: AppLogger,
+  ) {
+    this.logger.setContext(AudioService.name);
+  }
 
   async handleMessage(podcast: Podcast): Promise<void> {
     const isStoryPrcessed = await isStoryProcessed(
