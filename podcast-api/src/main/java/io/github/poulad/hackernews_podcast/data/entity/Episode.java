@@ -35,11 +35,11 @@ public class Episode {
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
 
-    public Long getStoryId() {
+    public long getStoryId() {
         return storyId;
     }
 
-    public void setStoryId(Long storyId) {
+    public void setStoryId(long storyId) {
         this.storyId = storyId;
     }
 

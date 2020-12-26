@@ -8,7 +8,7 @@ public final class Constants {
         PODCASTS("podcasts"),
         ;
 
-        private String name;
+        private final String name;
 
         Queues(String name) {
             this.name = name;
