@@ -32,27 +32,27 @@ public class Application {
         return BindingBuilder.bind(queue).to(exchange).with("");
     }
 
-    @Bean
-    SimpleMessageListenerContainer container(
-            ConnectionFactory connectionFactory,
-            MessageListenerAdapter listenerAdapter
-    ) {
-        var container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(queueName);
-        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-        container.setMessageListener(listenerAdapter);
-        return container;
-    }
-
-    @Bean
-    MessageListenerAdapter listenerAdapter(MessageReceiver receiver) {
-        var adapter = new MessageListenerAdapter(receiver, "receiveMessage");
-        adapter.setQueueOrTagToMethodName(Map.of(
-                Constants.Queues.STORIES.name(), "receiveStoriesMessage"
-        ));
-        return adapter;
-    }
+//    @Bean
+//    SimpleMessageListenerContainer container(
+//            ConnectionFactory connectionFactory,
+//            MessageListenerAdapter listenerAdapter
+//    ) {
+//        var container = new SimpleMessageListenerContainer();
+//        container.setConnectionFactory(connectionFactory);
+//        container.setQueueNames(queueName);
+//        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+//        container.setMessageListener(listenerAdapter);
+//        return container;
+//    }
+//
+//    @Bean
+//    MessageListenerAdapter listenerAdapter(MessageReceiver receiver) {
+//        var adapter = new MessageListenerAdapter(receiver, "receiveMessage");
+//        adapter.setQueueOrTagToMethodName(Map.of(
+//                Constants.Queues.STORIES.name(), "receiveStoriesMessage"
+//        ));
+//        return adapter;
+//    }
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
