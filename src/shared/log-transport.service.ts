@@ -8,7 +8,7 @@ import { LogEvent } from './log-event';
 export class LogTransportService {
   constructor(private readonly elasticsearchService: ElasticsearchService) {}
 
-  @Cron('15 * * * * *')
+  @Cron('*/15 * * * * *')
   async forwardLogs(): Promise<void> {
     console.info(`Forwaring logs to Elasticsearch`);
     // TODO timeout of 13 seconds before the next task starts
