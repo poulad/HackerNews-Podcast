@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
+@RequestMapping("api/episodes")
 public class EpisodesController {
     @Autowired
     private EpisodeService episodeService;
@@ -24,7 +26,7 @@ public class EpisodesController {
     private static final Logger logger = LogManager.getLogger(EpisodesController.class);
 
     @Async
-    @GetMapping("api/episodes")
+    @GetMapping
     public CompletableFuture<ResponseEntity<List<EpisodeDto>>> getEpisodes() {
         return episodeService.getAllEpisodes()
                 .thenApply(ResponseEntity::ok)
@@ -39,7 +41,7 @@ public class EpisodesController {
     }
 
     @Async
-    @GetMapping("api/episodes/{id}/audio.wav")
+    @GetMapping("/{id}/audio.wav")
     public CompletableFuture<ResponseEntity<byte[]>> getEpisodeAudio(
             @PathVariable("id") long storyId
     ) {

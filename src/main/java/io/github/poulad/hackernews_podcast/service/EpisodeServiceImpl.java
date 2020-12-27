@@ -2,6 +2,7 @@ package io.github.poulad.hackernews_podcast.service;
 
 import io.github.poulad.hackernews_podcast.data.repository.EpisodeRepository;
 import io.github.poulad.hackernews_podcast.model.EpisodeDto;
+import io.github.poulad.hackernews_podcast.model.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -16,17 +17,20 @@ public class EpisodeServiceImpl implements EpisodeService {
     @Autowired
     private EpisodeRepository episodeRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Async
     @Override
     public CompletableFuture<List<EpisodeDto>> getAllEpisodes() {
         return episodeRepository.findAllBy()
                 .thenApply(episodes -> episodes
                         .parallelStream()
-                        .map(EpisodeDto::new)
+                        .map(modelMapper::episodeViewToDto)
                         .peek(dto -> dto.getAudio()
                                 .setUrl(String.format("https://hackernews-podcast.herokuapp.com/api/episodes/%s/audio.wav", dto.getId()))
                         )
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toUnmodifiableList())
                 );
     }
 

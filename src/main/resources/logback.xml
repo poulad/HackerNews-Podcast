@@ -9,6 +9,7 @@
         </layout>
     </appender>
 
+    <!-- See https://github.com/internetitem/logback-elasticsearch-appender -->
     <appender name="Elasticsearch" class="com.internetitem.logback.elasticsearch.ElasticsearchAppender">
         <url>${HNP_ES_URL}/_bulk</url>
         <index>hnp-logs</index>
