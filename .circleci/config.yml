@@ -1,33 +1,33 @@
-version: 2.1
-
-orbs:
-  node: circleci/node@3.0.0
-
-executors:
-  docker-node:
-    docker:
-      - image: cimg/node:14.14.0
-
-jobs:
-  keepwarm:
-    executor: docker-node
-    steps:
-      - run: echo "hello world"
-      - run: curl -LS "https://hackernews-podcast.herokuapp.com/_keepwarm"
-
-
-workflows:
-  node-tests:
-    jobs:
-      - node/test
-
-  hourly1:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - keepwarm
+#version: 2.1
+#
+#orbs:
+#  node: circleci/node@3.0.0
+#
+#executors:
+#  docker-node:
+#    docker:
+#      - image: cimg/node:14.14.0
+#
+#jobs:
+#  keepwarm:
+#    executor: docker-node
+#    steps:
+#      - run: echo "hello world"
+#      - run: curl -LS "https://hackernews-podcast.herokuapp.com/_keepwarm"
+#
+#
+#workflows:
+#  node-tests:
+#    jobs:
+#      - node/test
+#
+#  hourly1:
+#    triggers:
+#      - schedule:
+#          cron: "0 0 * * *"
+#          filters:
+#            branches:
+#              only:
+#                - master
+#    jobs:
+#      - keepwarm
