@@ -36,3 +36,18 @@ build/
 ### App ###
 /tts/
 .env
+
+
+### Bazel ###
+bazel-bin
+bazel-genfiles
+bazel-out
+bazel-sfdc-bazel
+bazel-testlogs
+bazel-hackernews-podcast
+.ijwb
+
+### Bazel Config Files ###
+.company-bazelrc
+.user-bazelrc
+.user-bazelrc-cache

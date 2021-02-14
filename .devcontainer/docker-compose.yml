@@ -27,3 +27,10 @@ services:
   tts:
     image: synesthesiam/mozillatts
     restart: unless-stopped
+
+  elasticsearch:
+    image: library/elasticsearch:7.10.1
+    environment:
+      - "discovery.type=single-node"
+    network_mode: service:tts
+    restart: unless-stopped
