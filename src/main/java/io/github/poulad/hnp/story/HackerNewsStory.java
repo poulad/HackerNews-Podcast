@@ -1,18 +1,20 @@
 package io.github.poulad.hnp.story;
 
+import java.util.Date;
 import javax.annotation.Nonnull;
 import lombok.Value;
 
 @Value
 public class HackerNewsStory {
 
-  long number;
+  @Nonnull
+  Long id;
 
   @Nonnull
   String title;
 
   @Nonnull
-  String type;
+  HackerNewsStoryType type;
 
   @Nonnull
   String url;
@@ -20,7 +22,12 @@ public class HackerNewsStory {
   @Nonnull
   String by;
 
-  long score;
+  @Nonnull
+  Long score;
 
-  long time;
+  /**
+   * Publish time in UTC timezone.
+   */
+  @Nonnull
+  Date time;
 }

@@ -2,6 +2,7 @@ package io.github.poulad.hnp.story;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.poulad.hnp.common.Constants.Queues;
 import io.github.poulad.hnp.common.ServiceLayerException;
 import io.github.poulad.hnp.story.hn_api.ItemDto;
 import io.github.poulad.hnp.story.hn_api.DtoMapper;
@@ -16,6 +17,9 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +28,12 @@ import org.springframework.stereotype.Service;
 public class StoryServiceImpl implements StoryService {
 
   @Autowired
+  @Nonnull
   private HttpClient httpClient;
+
+  @Autowired
+  @Nonnull
+  private RabbitTemplate rabbitTemplate;
 
   @Nonnull
   @Override
@@ -55,6 +64,27 @@ public class StoryServiceImpl implements StoryService {
         .thenCompose(this::getHackerNewsStoryById)
         .thenApply(Optional::get)
         ;
+  }
+
+  @Nonnull
+  @Override
+  public CompletableFuture<Void> schedulePublishingHackerNewsStory(
+      @NonNull HackerNewsStory hackerNewsStory) throws ServiceLayerException {
+    String json;
+    try {
+      json = new ObjectMapper().writeValueAsString(hackerNewsStory);
+    } catch (JsonProcessingException e) {
+      log.error("Failed to serialize Hacker News story to JSON.", e);
+      throw new ServiceLayerException("Service failed to prepare Hacker News story for publish.",
+          e);
+    }
+
+    // TODO check for story type
+
+    return CompletableFuture.runAsync(() -> rabbitTemplate.send(
+        Queues.STORIES.getName(), new Message(json.getBytes(), new MessageProperties()))
+    );
+    // TODO catch errors in future exec
   }
 
   @Nonnull

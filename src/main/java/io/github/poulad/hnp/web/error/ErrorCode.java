@@ -5,6 +5,7 @@ import lombok.NonNull;
 
 public enum ErrorCode {
   INVALID_REQUEST_PARAMETER("invalid_request_param", 400),
+  RESOURCE_NOT_FOUND("resource_not_found", 400),
   SERVICE_FAILURE("service_failure", 500),
   ;
 

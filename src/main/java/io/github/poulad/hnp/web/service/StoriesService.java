@@ -3,7 +3,7 @@ package io.github.poulad.hnp.web.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.poulad.hnp.story.hn_api.ItemDto;
-import io.github.poulad.hnp.web.Constants;
+import io.github.poulad.hnp.common.Constants;
 import javax.annotation.Nonnull;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;

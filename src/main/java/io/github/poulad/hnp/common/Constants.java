@@ -1,4 +1,4 @@
-package io.github.poulad.hnp.web;
+package io.github.poulad.hnp.common;
 
 import javax.annotation.Nonnull;
 import lombok.NonNull;

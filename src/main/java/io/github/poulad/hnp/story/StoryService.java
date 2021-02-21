@@ -4,6 +4,7 @@ import io.github.poulad.hnp.common.ServiceLayerException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
+import lombok.NonNull;
 
 public interface StoryService {
 
@@ -14,4 +15,9 @@ public interface StoryService {
   @Nonnull
   CompletableFuture<HackerNewsStory> getTopHackerNewsStory(int offset)
       throws ServiceLayerException;
+
+  @Nonnull
+  CompletableFuture<Void> schedulePublishingHackerNewsStory(
+      @NonNull HackerNewsStory hackerNewsStory
+  ) throws ServiceLayerException;
 }
