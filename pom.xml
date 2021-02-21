@@ -20,6 +20,7 @@
     <org.apache.maven.plugins.version>3.8.1</org.apache.maven.plugins.version>
     <org.projectlombok.version>1.18.18</org.projectlombok.version>
     <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+    <com.tngtech.archunit.version>0.16.0</com.tngtech.archunit.version>
   </properties>
 
   <dependencies>
@@ -74,24 +75,47 @@
     </dependency>
 
     <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
       <optional>true</optional>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-configuration-processor</artifactId>
       <optional>true</optional>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.springframework.amqp</groupId>
       <artifactId>spring-rabbit-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit</artifactId>
+      <version>${com.tngtech.archunit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5</artifactId>
+      <version>${com.tngtech.archunit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -1,17 +1,17 @@
 package io.github.poulad.hnp.web.error;
 
-import lombok.NonNull;
+import javax.annotation.Nonnull;
 import lombok.Value;
 
 @Value
 public class ValidationError {
 
-  @NonNull
+  @Nonnull
   String parameter;
 
-  @NonNull
+  @Nonnull
   RequestParameterType parameterType;
 
-  @NonNull
+  @Nonnull
   String errorMessage;
 }

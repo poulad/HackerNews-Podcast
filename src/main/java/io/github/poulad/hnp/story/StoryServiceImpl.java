@@ -11,6 +11,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import javax.annotation.Nonnull;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -25,8 +26,8 @@ public class StoryServiceImpl implements StoryService {
   @Autowired
   private HttpClient httpClient;
 
+  @Nonnull
   @Override
-  @NonNull
   public CompletableFuture<Optional<HackerNewsStory>> getHackerNewsStoryById(long id) {
     log.debug("Getting HN story {}", id);
 
@@ -39,8 +40,8 @@ public class StoryServiceImpl implements StoryService {
         .thenApply(Optional::of);
   }
 
+  @Nonnull
   @Override
-  @NonNull
   public CompletableFuture<HackerNewsStory> getTopHackerNewsStory(int offset)
       throws ServiceLayerException {
     log.info("Getting top HN story");
@@ -56,7 +57,7 @@ public class StoryServiceImpl implements StoryService {
         ;
   }
 
-  @NonNull
+  @Nonnull
   @SneakyThrows
   private static ItemDto parseStoryResponse(@NonNull HttpResponse<String> body) {
     try {
@@ -67,7 +68,7 @@ public class StoryServiceImpl implements StoryService {
     }
   }
 
-  @NonNull
+  @Nonnull
   @SneakyThrows
   private static long[] parseTopStoriesResponse(@NonNull HttpResponse<String> body) {
     val bodyContent = body.body();
@@ -76,7 +77,7 @@ public class StoryServiceImpl implements StoryService {
     if (body.statusCode() != 200) {
       // TODO handle error responses. check status
       log.warn("Unexpected HTTP response status code {}. body: {}", body.statusCode(), bodyContent);
-      return null;
+      return new long[0];
     }
 
     try {

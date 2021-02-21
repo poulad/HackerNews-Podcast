@@ -1,6 +1,7 @@
 package io.github.poulad.hnp.web.error;
 
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import javax.validation.ConstraintViolationException;
 import lombok.NonNull;
 import lombok.val;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RequestExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(ConstraintViolationException.class)
+  @Nonnull
   @SuppressWarnings("unused") // used by Spring for failing request validations.
   public final ResponseEntity<ErrorResponse> handleConstraintViolation(
       final @NonNull ConstraintViolationException ex,

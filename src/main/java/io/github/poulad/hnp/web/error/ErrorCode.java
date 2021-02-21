@@ -1,5 +1,6 @@
 package io.github.poulad.hnp.web.error;
 
+import javax.annotation.Nonnull;
 import lombok.NonNull;
 
 public enum ErrorCode {
@@ -7,7 +8,7 @@ public enum ErrorCode {
   SERVICE_FAILURE("service_failure", 500),
   ;
 
-  @NonNull
+  @Nonnull
   private final String type;
   private final int httpStatusCode;
 
@@ -16,7 +17,7 @@ public enum ErrorCode {
     this.httpStatusCode = httpStatusCode;
   }
 
-  @NonNull
+  @Nonnull
   public String getType() {
     return type;
   }

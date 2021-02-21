@@ -1,5 +1,7 @@
 package io.github.poulad.hnp.web.data.entity;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -8,32 +10,41 @@ import java.time.LocalDateTime;
 @Data
 @Entity(name = "episode")
 public class Episode {
-    @Id
-    @Column(name = "story_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long storyId;
 
-    private String title;
+  @Id
+  @Nonnull
+  @Column(name = "story_id")
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long storyId;
 
-    private String description;
+  @Nonnull
+  private String title;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+  @Nullable
+  private String description;
 
-    @Column(name = "audio_url")
-    private String audioUrl;
+  @Nullable
+  @Column(name = "image_url")
+  private String imageUrl;
 
-    @Column(name = "audio_content")
-    private String audioContent;
+  @Nonnull
+  @Column(name = "audio_url")
+  private String audioUrl;
 
-    @Column(name = "audio_type")
-    private String audioType;
+  @Nullable
+  @Column(name = "audio_content")
+  private String audioContent;
 
-    @Column(name = "audio_size")
-    private long audioSize;
+  @Nonnull
+  @Column(name = "audio_type")
+  private String audioType;
 
-    private int duration;
+  @Column(name = "audio_size")
+  private long audioSize;
 
-    @Column(name = "published_at")
-    private LocalDateTime publishedAt;
+  private int duration;
+
+  @Nonnull
+  @Column(name = "published_at")
+  private LocalDateTime publishedAt;
 }

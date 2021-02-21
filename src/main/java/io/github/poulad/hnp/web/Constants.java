@@ -1,5 +1,6 @@
 package io.github.poulad.hnp.web;
 
+import javax.annotation.Nonnull;
 import lombok.NonNull;
 
 public final class Constants {
@@ -11,13 +12,14 @@ public final class Constants {
     PODCASTS("podcasts"),
     ;
 
+    @Nonnull
     private final String name;
 
     Queues(@NonNull String name) {
       this.name = name;
     }
 
-    @NonNull
+    @Nonnull
     public String getName() {
       return this.name;
     }

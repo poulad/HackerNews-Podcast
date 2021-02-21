@@ -7,6 +7,7 @@ import io.github.poulad.hnp.web.ApiResponse;
 import io.github.poulad.hnp.web.error.ErrorCode;
 import io.github.poulad.hnp.web.error.ErrorResponse;
 import java.util.concurrent.CompletableFuture;
+import javax.annotation.Nonnull;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import lombok.NonNull;
@@ -26,11 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/stories")
 public class StoriesController {
 
+  @Nonnull
   @Autowired
   StoryService storyService;
 
   @Async
-  @NonNull
+  @Nonnull
   @GetMapping(value = "/_top", produces = {MediaType.APPLICATION_JSON_VALUE})
   public CompletableFuture<ApiResponse<HackerNewsStory>> getTopStory(
       @RequestParam(value = "offset", required = false)

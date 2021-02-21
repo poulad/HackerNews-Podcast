@@ -1,23 +1,27 @@
 package io.github.poulad.hnp.web.model;
 
-import lombok.Data;
-import lombok.NonNull;
-
 import java.time.ZonedDateTime;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import lombok.Data;
 
 @Data
 public class EpisodeDto {
-    @NonNull
-    String id;
 
-    @NonNull
-    String title;
+  @Nonnull
+  String id;
 
-    String description;
+  @Nonnull
+  String title;
 
-    long duration;
+  @Nullable
+  String description;
 
-    AudioDto audio;
+  long duration;
 
-    ZonedDateTime publishedAt;
+  @Nonnull
+  AudioDto audio;
+
+  @Nonnull
+  ZonedDateTime publishedAt;
 }

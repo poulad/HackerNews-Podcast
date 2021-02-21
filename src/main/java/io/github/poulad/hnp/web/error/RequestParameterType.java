@@ -1,5 +1,6 @@
 package io.github.poulad.hnp.web.error;
 
+import javax.annotation.Nonnull;
 import lombok.NonNull;
 
 public enum RequestParameterType {
@@ -7,14 +8,14 @@ public enum RequestParameterType {
   BODY("request_body"),
   ;
 
-  @NonNull
+  @Nonnull
   private final String type;
 
   RequestParameterType(@NonNull String type) {
     this.type = type;
   }
 
-  @NonNull
+  @Nonnull
   public String getType() {
     return type;
   }

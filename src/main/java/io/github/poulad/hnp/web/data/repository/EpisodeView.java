@@ -1,21 +1,29 @@
 package io.github.poulad.hnp.web.data.repository;
 
 import java.time.LocalDateTime;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface EpisodeView {
-    long getStoryId();
 
-    String getTitle();
+  long getStoryId();
 
-    String getDescription();
+  @Nonnull
+  String getTitle();
 
-    long getDuration();
+  @Nullable
+  String getDescription();
 
-    String getAudioUrl();
+  long getDuration();
 
-    String getAudioType();
+  @Nonnull
+  String getAudioUrl();
 
-    long getAudioSize();
+  @Nonnull
+  String getAudioType();
 
-    LocalDateTime getPublishedAt();
+  long getAudioSize();
+
+  @Nonnull
+  LocalDateTime getPublishedAt();
 }
