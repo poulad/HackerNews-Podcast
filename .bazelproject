@@ -1,8 +1,0 @@
-directories:
-  .
-
-targets:
-  //:web_api
-
-workspace_type: java
-java_language_level: 11
