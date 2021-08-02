@@ -16,7 +16,7 @@
   <description>Hacker News Podcast</description>
 
   <properties>
-    <java.version>11</java.version>
+    <java.version>16</java.version>
     <org.apache.maven.plugins.version>3.8.1</org.apache.maven.plugins.version>
     <org.projectlombok.version>1.18.18</org.projectlombok.version>
     <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>

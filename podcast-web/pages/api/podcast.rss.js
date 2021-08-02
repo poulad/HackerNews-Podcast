@@ -1,6 +1,6 @@
 import Axios from 'axios';
 
-export default async (req, res) => {
+const handleRequest = async (req, res) => {
   const rss = await generateRss();
   // writeFileSync('public/podcast.rss', rss, 'utf8');
   res.statusCode = 200;
@@ -62,3 +62,5 @@ async function getEpisodes() {
   });
   return resp.data.data;
 }
+
+export default handleRequest
