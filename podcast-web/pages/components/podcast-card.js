@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import BookmarkBorder from "@material-ui/icons/BookmarkBorder";
 import Description from "@material-ui/icons/Description";
+import ReactAudioPlayer from 'react-audio-player';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -39,37 +40,40 @@ const useStyles = makeStyles((theme) =>
 export default function PodcastCard() {
   const classes = useStyles();
 
-  return (
-    <Card className={classes.root}>
-      <div className={classes.details}>
-        <CardContent className={classes.content}>
-          <Typography component="h5" variant="h5">
-            Podcast title here
-          </Typography>
-          <Typography variant="subtitle1" color="textSecondary">
-            Author
-          </Typography>
-          <Typography variant="subtitle2" color="textSecondary">
-            {new Date().toDateString()}
-          </Typography>
-        </CardContent>
-        <div className={classes.controls}>
-          <IconButton aria-label="play/pause">
-            <PlayArrowIcon className={classes.playIcon}/>
-          </IconButton>
-          <IconButton aria-label="bookmark">
-            <BookmarkBorder/>
-          </IconButton>
-          <IconButton aria-label="read-along">
-            <Description/>
-          </IconButton>
-        </div>
+  return <Card className={classes.root}>
+    <div className={classes.details}>
+      <CardContent className={classes.content}>
+        <Typography component="h5" variant="h5">
+          Podcast title here
+        </Typography>
+        <Typography variant="subtitle1" color="textSecondary">
+          Author
+        </Typography>
+        <Typography variant="subtitle2" color="textSecondary">
+          {new Date().toDateString()}
+        </Typography>
+      </CardContent>
+
+      <div className={classes.controls}>
+        <ReactAudioPlayer controls src="/wiki-wikipedia.wav"/>
       </div>
-      <CardMedia
-        className={classes.cover}
-        image="/logo.png"
-        title="Launching HN Podcast"
-      />
-    </Card>
-  );
+
+      <div className={classes.controls}>
+        <IconButton aria-label="play/pause">
+          <PlayArrowIcon className={classes.playIcon}/>
+        </IconButton>
+        <IconButton aria-label="bookmark">
+          <BookmarkBorder/>
+        </IconButton>
+        <IconButton aria-label="read-along">
+          <Description/>
+        </IconButton>
+      </div>
+    </div>
+    <CardMedia
+      className={classes.cover}
+      image="/logo.png"
+      title="Launching HN Podcast"
+    />
+  </Card>;
 }
