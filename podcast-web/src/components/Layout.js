@@ -1,6 +1,6 @@
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {makeStyles} from '@material-ui/core/styles';
-import {AppBar, IconButton, Toolbar, Typography} from "@material-ui/core";
+import {AppBar, BottomNavigation, IconButton, Link, Toolbar, Typography} from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import Head from "next/head";
 import styles from "../../styles/Home.module.css";
@@ -34,17 +34,16 @@ export default function Layout({children}) {
             <MenuIcon/>
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            HackerNews Podcast
+            <Link href="/" color="inherit">Hacker News Podcast</Link>
           </Typography>
         </Toolbar>
       </AppBar>
       <main>{children}</main>
       <footer className={styles.footer}>
+        <Link href="/moderators/podcasts/24050980">Moderators Dashboard</Link>
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+          target="_blank" rel="noopener noreferrer">
           Powered by{" "}
           <Image width="75" height="50" src="/vercel.svg" alt="Vercel Logo" className={styles.logo}/>
         </a>

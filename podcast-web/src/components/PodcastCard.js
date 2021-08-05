@@ -8,6 +8,8 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import BookmarkBorder from "@material-ui/icons/BookmarkBorder";
 import Description from "@material-ui/icons/Description";
 import ReactAudioPlayer from 'react-audio-player';
+import {podcast} from "../DB";
+import {Link} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -44,18 +46,21 @@ export default function PodcastCard() {
     <div className={classes.details}>
       <CardContent className={classes.content}>
         <Typography component="h5" variant="h5">
-          Podcast title here
+          {podcast.title}
         </Typography>
         <Typography variant="subtitle1" color="textSecondary">
-          Author
+          By @
+          <Link href={`https://news.ycombinator.com/user?id=${podcast.author}`} target="_blank" rel="noopener">
+            {podcast.author}
+          </Link>
         </Typography>
         <Typography variant="subtitle2" color="textSecondary">
-          {new Date().toDateString()}
+          {podcast.publishedAt.toDateString()}
         </Typography>
       </CardContent>
 
       <div className={classes.controls}>
-        <ReactAudioPlayer controls src="/wiki-wikipedia.wav"/>
+        <ReactAudioPlayer controls src={podcast.audio.url}/>
       </div>
 
       <div className={classes.controls}>
@@ -66,14 +71,10 @@ export default function PodcastCard() {
           <BookmarkBorder/>
         </IconButton>
         <IconButton aria-label="read-along">
-          <Description/>
+          <Link href={podcast.hnUrl} target="_blank" rel="noopener"><Description/></Link>
         </IconButton>
       </div>
     </div>
-    <CardMedia
-      className={classes.cover}
-      image="/logo.png"
-      title="Launching HN Podcast"
-    />
+    <CardMedia className={classes.cover} image={podcast.image.url} title="Launching HN Podcast"/>
   </Card>;
 }

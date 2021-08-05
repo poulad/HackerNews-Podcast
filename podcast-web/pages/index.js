@@ -1,5 +1,5 @@
 import {Container, Grid, Link, Typography} from "@material-ui/core";
-import PodcastCard from "./components/podcast-card";
+import PodcastCard from "../src/components/PodcastCard";
 
 function Index() {
 

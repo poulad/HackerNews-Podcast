@@ -1,5 +1,5 @@
 import '../styles/globals.css'
-import Layout from "./components/layout";
+import Layout from "../src/components/Layout";
 import {useEffect} from "react";
 import {Fragment} from "react";
 import theme from '../src/theme';
