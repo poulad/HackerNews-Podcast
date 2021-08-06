@@ -2,49 +2,55 @@ package io.github.poulad.hnp.web.data.entity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import lombok.Data;
 
 import javax.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Data
 @Entity(name = "episode")
 public class Episode {
 
-  @Id
-  @Nonnull
-  @Column(name = "story_id")
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long storyId;
+    @Id
+    @Nonnull
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-  @Nonnull
-  private String title;
+    @Nonnull
+    @Column(name = "story_id")
+    private Long storyId;
 
-  @Nullable
-  private String description;
+    @Nonnull
+    private String title;
 
-  @Nullable
-  @Column(name = "image_url")
-  private String imageUrl;
+    @Nullable
+    private String description;
 
-  @Nonnull
-  @Column(name = "audio_url")
-  private String audioUrl;
+    @Nullable
+    @Column(name = "image_url")
+    private String imageUrl;
 
-  @Nullable
-  @Column(name = "audio_content")
-  private String audioContent;
+    @Nonnull
+    @Column(name = "audio_url")
+    private String audioUrl;
 
-  @Nonnull
-  @Column(name = "audio_type")
-  private String audioType;
+    @Nullable
+    @Column(name = "audio_content")
+    private String audioContent;
 
-  @Column(name = "audio_size")
-  private long audioSize;
+    @Nonnull
+    @Column(name = "audio_type")
+    private String audioType;
 
-  private int duration;
+    @Column(name = "audio_size")
+    private long audioSize;
 
-  @Nonnull
-  @Column(name = "published_at")
-  private LocalDateTime publishedAt;
+    // TODO: @Column(name = "audio_duration")
+    private int duration;
+
+    @Nonnull
+    @Column(name = "published_at")
+    private LocalDateTime publishedAt;
 }

@@ -1,9 +1,7 @@
 package io.github.poulad.hnp.web.data.repository;
 
+import io.github.poulad.hnp.web.data.entity.DraftEpisode;
 import io.github.poulad.hnp.web.data.entity.Episode;
-
-import javax.annotation.Nonnull;
-
 import lombok.NonNull;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.scheduling.annotation.Async;
@@ -13,19 +11,18 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
+
 @Repository
-public interface EpisodeRepository extends CrudRepository<Episode, Long> {
+public interface DraftEpisodeRepository extends CrudRepository<DraftEpisode, Long> {
 
     @Async
     @Nonnull
-    CompletableFuture<Collection<EpisodeView>> findAllBy();
+    CompletableFuture<Optional<AudioContentView>> findByEpisodeId(long episodeId);
 
     @Async
+    @Override
     @Nonnull
-    CompletableFuture<Optional<AudioContentView>> findByStoryId(long storyId);
-
-    @Async
-    @Nonnull
-    <S extends Episode> S save(@NonNull S episode);
+    <S extends DraftEpisode> S save(@NonNull S draftEpisode);
 
 }

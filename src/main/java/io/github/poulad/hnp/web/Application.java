@@ -2,6 +2,7 @@ package io.github.poulad.hnp.web;
 
 import io.github.poulad.hnp.story.StoryService;
 import io.github.poulad.hnp.story.StoryServiceImpl;
+import io.github.poulad.hnp.web.config.Beans;
 import io.github.poulad.hnp.web.controller.MessageHandler;
 
 import javax.annotation.Nonnull;
@@ -16,8 +17,13 @@ import org.springframework.context.annotation.Bean;
 
 import java.net.http.HttpClient;
 
+import org.springframework.context.annotation.Import;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
+
+@Import({
+        Beans.class,
+})
 @SpringBootApplication
 public class Application {
 
