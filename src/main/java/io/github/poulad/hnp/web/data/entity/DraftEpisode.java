@@ -1,6 +1,7 @@
 package io.github.poulad.hnp.web.data.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -9,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Data
+@NoArgsConstructor
 @Entity(name = "draft_episode")
 public class DraftEpisode {
 

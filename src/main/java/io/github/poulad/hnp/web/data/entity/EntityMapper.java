@@ -2,6 +2,7 @@ package io.github.poulad.hnp.web.data.entity;
 
 import io.github.poulad.hnp.story.HackerNewsStory;
 import io.github.poulad.hnp.story.hn_api.ItemDto;
+import io.github.poulad.hnp.web.model.DraftEpisodeDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -25,5 +26,9 @@ public interface EntityMapper {
     @Nullable
     @Mapping(source = "id", target = "episodeId")
     DraftEpisode episodeToDraftEpisode(@Nullable Episode episode);
+
+    @Nullable
+    @Mapping(source = "episodeId", target = "id")
+    DraftEpisodeDto draftEpisodeToDraftEpisodeDto(@Nullable DraftEpisode draftEpisode);
 
 }

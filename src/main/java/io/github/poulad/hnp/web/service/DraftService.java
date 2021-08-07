@@ -9,6 +9,7 @@ import io.github.poulad.hnp.web.data.entity.EntityMapper;
 import io.github.poulad.hnp.web.data.entity.Episode;
 import io.github.poulad.hnp.web.data.repository.DraftEpisodeRepository;
 import io.github.poulad.hnp.web.data.repository.EpisodeRepository;
+import io.github.poulad.hnp.web.model.DraftEpisodeDto;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -44,18 +45,19 @@ public class DraftService {
 
         // TODO: first, ensure there is no episode for this HN story.
 
-        queryHackerNewsStory(storyId)
-                .thenCompose(this::createNewUnpublishedEpisode);
-
-        final String storyUrl = String.format("https://hacker-news.firebaseio.com/v0/item/%d.json", storyId);
-
-        val request = HttpRequest.newBuilder(URI.create(storyUrl)).build();
-        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenApply(DraftService::convertJsonToItemDto)
-                .thenApply(DtoMapper.INSTANCE::itemDtoToHackerNewsStory)
+        return queryHackerNewsStory(storyId)
                 .thenCompose(this::createNewUnpublishedEpisode)
                 .thenAccept(draftEpisode -> log.info("Created new draft episode: " + draftEpisode));
+    }
+
+    @Nonnull
+    public CompletableFuture<DraftEpisodeDto> getDraftEpisodeById(final long draftEpisodeId) {
+        return draftEpisodeRepository.findByEpisodeId(draftEpisodeId)
+                .thenApply(entity -> {
+                    log.info("Go Entity: " + entity);
+                    return entity;
+                })
+                .thenApply(EntityMapper.INSTANCE::draftEpisodeToDraftEpisodeDto);
     }
 
     @Nonnull

@@ -10,8 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor
 public class ApiResponse<TResult> {
 
   @Nullable

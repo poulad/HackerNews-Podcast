@@ -18,7 +18,8 @@ public interface DraftEpisodeRepository extends CrudRepository<DraftEpisode, Lon
 
     @Async
     @Nonnull
-    CompletableFuture<Optional<AudioContentView>> findByEpisodeId(long episodeId);
+    CompletableFuture<DraftEpisode> findByEpisodeId(@NonNull Long episodeId);
+
 
     @Async
     @Override

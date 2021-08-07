@@ -1,0 +1,6 @@
+
+DROP TABLE IF EXISTS draft_episode;
+
+DROP TABLE IF EXISTS episode;
+
+DROP TABLE IF EXISTS audio;

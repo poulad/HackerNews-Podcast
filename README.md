@@ -8,6 +8,10 @@ Add to your pod catcher:
 https://hacker-news-podcast.vercel.app/api/podcast.rss
 ```
 
+## Development
+
+- See Postman API collection at https://www.postman.com/poulad/workspace/hacker-news-podcast
+
 <!--
 
 ## TODO

@@ -1,13 +1,18 @@
 package io.github.poulad.hnp.web.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class EpisodeDraftRequestDto {
+import javax.annotation.Nonnull;
+import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 
-    Long storyId;
+@Data
+@Valid
+@NoArgsConstructor
+public final class EpisodeDraftRequestDto {
+
+    @Nonnull
+    @Positive
+    public Long storyId;
 }

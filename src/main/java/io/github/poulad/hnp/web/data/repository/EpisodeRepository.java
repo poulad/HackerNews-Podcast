@@ -16,13 +16,13 @@ import java.util.concurrent.CompletableFuture;
 @Repository
 public interface EpisodeRepository extends CrudRepository<Episode, Long> {
 
-    @Async
-    @Nonnull
-    CompletableFuture<Collection<EpisodeView>> findAllBy();
-
-    @Async
-    @Nonnull
-    CompletableFuture<Optional<AudioContentView>> findByStoryId(long storyId);
+//    @Async
+//    @Nonnull
+//    CompletableFuture<Collection<EpisodeView>> findAllBy();
+//
+//    @Async
+//    @Nonnull
+//    CompletableFuture<Optional<AudioContentView>> findByStoryId(long storyId);
 
     @Async
     @Nonnull
