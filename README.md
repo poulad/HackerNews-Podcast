@@ -19,7 +19,13 @@ Build:
 
 ```shell
 # export "JAVA_HOME=/usr/lib/jvm/java-16-openjdk-amd64"
-./mvnw -DskipTests clean package
+./mvnw -DskipTests clean dependency:list package assembly:single
+```
+
+Run:
+
+```shell
+java -jar target/hacker_news_podcast-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 ```
 
 Updating Maven Wrapper:

@@ -10,7 +10,7 @@
     <relativePath/>
   </parent>
   <groupId>io.github.poulad</groupId>
-  <artifactId>hackernews_podcast</artifactId>
+  <artifactId>hacker_news_podcast</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>hacker-news-podcast</name>
   <description>Hacker News Podcast</description>
