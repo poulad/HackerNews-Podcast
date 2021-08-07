@@ -12,6 +12,21 @@ https://hacker-news-podcast.vercel.app/api/podcast.rss
 
 - See Postman API collection at https://www.postman.com/poulad/workspace/hacker-news-podcast
 
+Build:
+
+```shell
+# export "JAVA_HOME=/usr/lib/jvm/java-16-openjdk-amd64"
+./mvnw -DskipTests clean package
+```
+
+Updating Maven Wrapper:
+
+Instructions from: https://mvnrepository.com/artifact/io.takari/maven-wrapper
+
+```shell
+./mvnw -N io.takari:maven:0.7.7:wrapper
+```
+
 <!--
 
 ## TODO

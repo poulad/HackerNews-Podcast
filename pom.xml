@@ -17,6 +17,11 @@
 
   <properties>
     <java.version>16</java.version>
+    <maven.compiler.target>16</maven.compiler.target>
+    <maven.compiler.source>16</maven.compiler.source>
+
+    <start-class>io.github.poulad.hnp.web.Application</start-class>
+
     <org.apache.maven.plugins.version>3.8.1</org.apache.maven.plugins.version>
     <org.projectlombok.version>1.18.20</org.projectlombok.version>
     <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
