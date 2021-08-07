@@ -11,6 +11,9 @@ https://hacker-news-podcast.vercel.app/api/podcast.rss
 ## Development
 
 - See Postman API collection at https://www.postman.com/poulad/workspace/hacker-news-podcast
+- About Heroku's Java buildpack:
+    - https://devcenter.heroku.com/articles/java-support
+    - https://github.com/heroku/heroku-buildpack-java
 
 Build:
 
