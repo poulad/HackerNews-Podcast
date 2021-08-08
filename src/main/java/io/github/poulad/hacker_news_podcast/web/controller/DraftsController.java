@@ -1,4 +1,4 @@
-package io.github.poulad.hnp.web.controller;
+package io.github.poulad.hacker_news_podcast.web.controller;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
