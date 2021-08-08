@@ -1,4 +1,4 @@
-package io.github.poulad.hacker_news_podcast.web;
+package io.github.poulad.hnp.web;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

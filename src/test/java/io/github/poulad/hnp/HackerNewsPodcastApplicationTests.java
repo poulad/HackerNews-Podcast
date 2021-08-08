@@ -1,4 +1,4 @@
-package io.github.poulad.test.hacker_news_podcast;
+package io.github.poulad.hnp;
 
 import org.junit.jupiter.api.Test;
 //import org.springframework.boot.test.context.SpringBootTest;
