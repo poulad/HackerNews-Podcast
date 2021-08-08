@@ -7,8 +7,6 @@ import org.springframework.context.annotation.Import;
 
 import java.net.http.HttpClient;
 
-import javax.annotation.Nonnull;
-
 @Configuration
 @Import({
         DraftService.class,

@@ -1,0 +1,6 @@
+web: java -jar target/java-getting-started-1.0.jar
+
+# web: java -jar target/hacker_news_podcast-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+
+# For Heroku Build, set environment variable:
+# MAVEN_CUSTOM_GOALS=clean dependency:list install assembly:single
