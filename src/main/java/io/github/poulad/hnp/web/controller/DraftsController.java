@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,13 +35,13 @@ public class DraftsController {
     @Async
     @PostMapping(
             value = "",
-            consumes = {MediaType.APPLICATION_JSON_VALUE},
-            produces = {MediaType.APPLICATION_JSON_VALUE}
+            consumes = {MediaType.APPLICATION_JSON_VALUE}
     )
-    public CompletableFuture<Void> create(
+    public CompletableFuture<ResponseEntity<Void>> create(
             @RequestBody @NonNull @Valid final EpisodeDraftRequestDto episodeDraftRequestDto
     ) {
-        return draftService.draftNewEpisodeForStory(episodeDraftRequestDto.getStoryId());
+        return draftService.draftNewEpisodeForStory(episodeDraftRequestDto.getStoryId())
+                .thenApply(ignored -> ResponseEntity.noContent().build());
     }
 
     @Async
@@ -48,9 +49,10 @@ public class DraftsController {
             value = "{draftId}",
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
-    public CompletableFuture<DraftEpisodeDto> getById(
+    public CompletableFuture<ResponseEntity<DraftEpisodeDto>> getById(
             @PathVariable @NonNull final Long draftId
     ) {
-        return draftService.getDraftEpisodeById(draftId);
+        return draftService.getDraftEpisodeById(draftId)
+                .thenApply(ResponseEntity::ok);
     }
 }
