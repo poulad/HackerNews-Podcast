@@ -5,23 +5,20 @@ import {InsertLink, Save} from "@material-ui/icons";
 import {AlertTitle} from "@material-ui/lab";
 import {useState} from "react";
 import ApiClient from "../../../src/services/ApiClient";
+import YCHNApiClient from "../../../src/services/YCHNApiClient";
 
 /*TODO
  * implement a delayed appearance.
  * see https://material-ui.com/components/progress/#delaying-appearance
  */
 
-function getStoryIdFromUrl(url) {
-  const idPart = url.substring("https://news.ycombinator.com/item?id=".length)
-  return parseInt(idPart)
-}
-
-
 function New() {
   const [storyUrl, setStoryUrl] = useState("https://news.ycombinator.com/item?id=24050980");
 
   const createDraft = async (e) => {
-    await ApiClient.createNewDraftEpisode(getStoryIdFromUrl(storyUrl))
+    const storyId = YCHNApiClient.getStoryIdFromUrl(storyUrl)
+    const apiClient = ApiClient.forClientApp()
+    await apiClient.createNewDraftEpisode(storyId)
   }
 
   return <Container maxWidth="md">
@@ -56,7 +53,6 @@ function New() {
     </strong>
       .
     </Alert>
-
 
   </Container>
 }

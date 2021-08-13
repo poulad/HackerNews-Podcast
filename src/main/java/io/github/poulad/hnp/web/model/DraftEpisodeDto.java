@@ -7,6 +7,7 @@ public record DraftEpisodeDto(
         @Nonnull String id,
         @Nullable String title,
         @Nullable String description,
+        @Nullable ImageDto image,
         @Nullable AudioDto audio
 ) {
 
